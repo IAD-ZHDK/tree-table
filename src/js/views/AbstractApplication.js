@@ -4,7 +4,7 @@ import BaseScene from '../layers/BaseScene'
 
 class AbstractApplication {
   constructor () {
-    this._camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000)
+    this._camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 5000)
     this._camera.position.z = 400
 
     this._scenes = []
