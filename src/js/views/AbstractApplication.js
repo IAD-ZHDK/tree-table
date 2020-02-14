@@ -7,9 +7,10 @@ class AbstractApplication {
     this._camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000)
     this._camera.position.z = 400
 
-    this._activeScene = new BaseScene()
+    this._scenes = []
 
     this._renderer = new WebGLRenderer()
+    this._renderer.autoClear = false
     this._renderer.setPixelRatio(window.devicePixelRatio)
     this._renderer.setSize(window.innerWidth, window.innerHeight)
     document.body.appendChild(this._renderer.domElement)
@@ -31,8 +32,12 @@ class AbstractApplication {
     return this._camera
   }
 
-  get activeScene () {
-    return this._activeScene
+  get scenes () {
+    return this._scenes
+  }
+
+  addScene (scene) {
+    this._scenes.push(scene)
   }
 
   onWindowResize () {
@@ -44,13 +49,14 @@ class AbstractApplication {
 
   animate (timestamp) {
     requestAnimationFrame(this.animate.bind(this))
-    this._renderer.render(this._activeScene, this._camera)
-  }
 
-  changeScene (scene) {
-    this._activeScene.stop()
-    scene.start()
-    this._activeScene = scene
+    this._renderer.clear()
+    for (let scene of this._scenes) {
+      if (scene.active) {
+        scene.update()
+        this._renderer.render(scene, this._camera)
+      }
+    }
   }
 }
 

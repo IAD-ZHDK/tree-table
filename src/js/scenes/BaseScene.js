@@ -4,6 +4,7 @@ class BaseScene extends Scene {
   constructor (app) {
     super()
     this._app = app
+    this._active = true
   }
 
   setup () {
@@ -14,16 +15,16 @@ class BaseScene extends Scene {
 
   }
 
-  start () {
-
-  }
-
-  stop () {
-
-  }
-
   get app () {
     return this._app
+  }
+
+  get active () {
+    return this._active
+  }
+
+  set active (value) {
+    this._active = value
   }
 }
 
