@@ -1,6 +1,6 @@
 import { PerspectiveCamera, Scene, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import BaseScene from '../scenes/BaseScene'
+import BaseScene from '../layers/BaseScene'
 
 class AbstractApplication {
   constructor () {

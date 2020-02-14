@@ -1,6 +1,6 @@
 import AbstractApplication from 'views/AbstractApplication'
-import BoxExampleScene from './scenes/BoxExampleScene'
-import GlobeScene from './scenes/GlobeScene'
+import BoxExampleScene from './layers/BoxExampleScene'
+import GlobeScene from './layers/GlobeScene'
 
 class Main extends AbstractApplication {
   constructor () {
