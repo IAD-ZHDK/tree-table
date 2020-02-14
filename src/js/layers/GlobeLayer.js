@@ -15,6 +15,10 @@ import {
 class GlobeLayer extends BaseLayer {
   setup () {
     super.setup()
+
+    // disable zoom for globe
+    this.controls.enableZoom = false
+
     let EarthRadius = 200
     /* earth */
     const EarthTexture = new TextureLoader().load('static/textures/earthMono8k.jpg')
