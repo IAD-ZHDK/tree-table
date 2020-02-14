@@ -1,23 +1,16 @@
-import {
-  BoxGeometry,
-  Mesh,
-  TextureLoader,
-  MeshBasicMaterial
-} from 'three'
 import AbstractApplication from 'views/AbstractApplication'
+import BoxExampleScene from './scenes/BoxExampleScene'
 
 class Main extends AbstractApplication {
   constructor () {
     super()
 
-    const texture = new TextureLoader().load('static/textures/crate.gif')
+    // create box scene and display it
+    const boxScene = new BoxExampleScene(this)
+    boxScene.setup()
+    this.changeScene(boxScene)
 
-    const geometry = new BoxGeometry(200, 200, 200)
-    const material = new MeshBasicMaterial({ map: texture })
-
-    this._mesh = new Mesh(geometry, material)
-    this._scene.add(this._mesh)
-
+    // start animation renderer
     this.animate()
   }
 }

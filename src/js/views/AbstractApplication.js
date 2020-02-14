@@ -1,16 +1,13 @@
-import {
-  PerspectiveCamera,
-  Scene,
-  WebGLRenderer
-} from 'three'
+import { PerspectiveCamera, Scene, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import BaseScene from '../scenes/BaseScene'
 
 class AbstractApplication {
   constructor () {
     this._camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000)
     this._camera.position.z = 400
 
-    this._scene = new Scene()
+    this._activeScene = new BaseScene()
 
     this._renderer = new WebGLRenderer()
     this._renderer.setPixelRatio(window.devicePixelRatio)
@@ -34,8 +31,8 @@ class AbstractApplication {
     return this._camera
   }
 
-  get scene () {
-    return this._scene
+  get activeScene () {
+    return this._activeScene
   }
 
   onWindowResize () {
@@ -47,7 +44,13 @@ class AbstractApplication {
 
   animate (timestamp) {
     requestAnimationFrame(this.animate.bind(this))
-    this._renderer.render(this._scene, this._camera)
+    this._renderer.render(this._activeScene, this._camera)
+  }
+
+  changeScene (scene) {
+    this._activeScene.stop()
+    scene.start()
+    this._activeScene = scene
   }
 }
 
