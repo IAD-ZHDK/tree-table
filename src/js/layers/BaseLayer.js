@@ -1,10 +1,10 @@
 import { Scene } from 'three'
 
-class BaseScene extends Scene {
+class BaseLayer {
   constructor (app) {
-    super()
     this._app = app
     this._active = true
+    this._scene = new Scene()
   }
 
   setup () {
@@ -19,6 +19,10 @@ class BaseScene extends Scene {
     return this._app
   }
 
+  get scene () {
+    return this._scene
+  }
+
   get active () {
     return this._active
   }
@@ -28,4 +32,4 @@ class BaseScene extends Scene {
   }
 }
 
-export default BaseScene
+export default BaseLayer

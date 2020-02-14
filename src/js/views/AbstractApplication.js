@@ -1,13 +1,13 @@
 import { PerspectiveCamera, Scene, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import BaseScene from '../layers/BaseScene'
+import BaseLayer from '../layers/BaseLayer'
 
 class AbstractApplication {
   constructor () {
     this._camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 5000)
     this._camera.position.z = 400
 
-    this._scenes = []
+    this._layers = []
 
     this._renderer = new WebGLRenderer()
     this._renderer.autoClear = false
@@ -32,12 +32,12 @@ class AbstractApplication {
     return this._camera
   }
 
-  get scenes () {
-    return this._scenes
+  get layers () {
+    return this._layers
   }
 
-  addScene (scene) {
-    this._scenes.push(scene)
+  addLayer (scene) {
+    this._layers.push(scene)
   }
 
   onWindowResize () {
@@ -51,10 +51,10 @@ class AbstractApplication {
     requestAnimationFrame(this.animate.bind(this))
 
     this._renderer.clear()
-    for (let scene of this._scenes) {
-      if (scene.active) {
-        scene.update()
-        this._renderer.render(scene, this._camera)
+    for (let layer of this._layers) {
+      if (layer.active) {
+        layer.update()
+        this._renderer.render(layer.scene, this._camera)
       }
     }
   }

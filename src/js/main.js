@@ -1,23 +1,24 @@
 import AbstractApplication from 'views/AbstractApplication'
-import BoxExampleScene from './layers/BoxExampleScene'
-import GlobeScene from './layers/GlobeScene'
+import BoxExampleLayer from './layers/BoxExampleLayer'
+import GlobeLayer from './layers/GlobeLayer'
 
 class Main extends AbstractApplication {
   constructor () {
     super()
 
+    // set clear color to transparent
     this.renderer.setClearColor(0xffffff, 0)
 
     // define scenes
-    this.globeScene = new GlobeScene(this)
-    this.globeScene.setup()
+    this.globeLayer = new GlobeLayer(this)
+    this.globeLayer.setup()
 
-    this.boxExampleScene = new BoxExampleScene(this)
-    this.boxExampleScene.setup()
+    this.boxExampleLayer = new BoxExampleLayer(this)
+    this.boxExampleLayer.setup()
 
     // add scenes
-    this.addScene(this.boxExampleScene)
-    this.addScene(this.globeScene)
+    this.addLayer(this.boxExampleLayer)
+    this.addLayer(this.globeLayer)
 
     // start animation renderer
     this.animate()

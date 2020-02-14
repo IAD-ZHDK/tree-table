@@ -1,7 +1,7 @@
-import BaseScene from './BaseScene'
+import BaseLayer from './BaseLayer'
 import { BoxGeometry, Mesh, MeshBasicMaterial, TextureLoader } from 'three'
 
-class BoxExampleScene extends BaseScene {
+class BoxExampleLayer extends BaseLayer {
   setup () {
     super.setup()
 
@@ -11,8 +11,8 @@ class BoxExampleScene extends BaseScene {
     const material = new MeshBasicMaterial({ map: texture })
 
     this._mesh = new Mesh(geometry, material)
-    this.add(this._mesh)
+    this.scene.add(this._mesh)
   }
 }
 
-export default BoxExampleScene
+export default BoxExampleLayer

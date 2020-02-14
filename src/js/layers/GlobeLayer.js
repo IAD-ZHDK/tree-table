@@ -1,4 +1,4 @@
-import BaseScene from './BaseScene'
+import BaseLayer from './BaseLayer'
 import {
   SphereGeometry,
   Mesh,
@@ -12,7 +12,7 @@ import {
   LineBasicMaterial
 } from 'three'
 
-class GlobeScene extends BaseScene {
+class GlobeLayer extends BaseLayer {
   setup () {
     super.setup()
     let EarthRadius = 200
@@ -22,14 +22,14 @@ class GlobeScene extends BaseScene {
     let EarthMaterial = new MeshBasicMaterial({ map: EarthTexture })
     this.Earth = new Mesh(EarthGeometry, EarthMaterial)
     this.Earth.position.x = 0
-    this.add(this.Earth)
+    this.scene.add(this.Earth)
     /* stars */
     const StarTexture = new TextureLoader().load('static/textures/sky.jpg')
     let StarGeometry = new SphereGeometry(1200, 10, 10)
     let StarMaterial = new MeshBasicMaterial({ side: BackSide, map: StarTexture })
     this.Star = new Mesh(StarGeometry, StarMaterial)
     this.Star.position.x = 0
-    this.add(this.Star)
+    this.scene.add(this.Star)
     /* dataPoint */
     for (let i = 0; i < 200; i++) {
       let points = []
@@ -43,7 +43,7 @@ class GlobeScene extends BaseScene {
       let geometry = new BufferGeometry().setFromPoints(points)
       let material = new LineBasicMaterial({ color: 0xff00ff })
       let data = new Line(geometry, material, 5)
-      this.add(data)
+      this.scene.add(data)
     }
   }
 
@@ -66,4 +66,4 @@ function calcPosition (lat, lon, radius) {
   return [x, y, z]
 }
 
-export default GlobeScene
+export default GlobeLayer
