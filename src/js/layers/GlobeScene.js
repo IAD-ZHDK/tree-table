@@ -1,5 +1,16 @@
 import BaseScene from './BaseScene'
-import { SphereGeometry, Mesh, MeshBasicMaterial, TextureLoader, BackSide, CylinderGeometry, Line, Vector3, BufferGeometry, LineBasicMaterial } from 'three'
+import {
+  SphereGeometry,
+  Mesh,
+  MeshBasicMaterial,
+  TextureLoader,
+  BackSide,
+  CylinderGeometry,
+  Line,
+  Vector3,
+  BufferGeometry,
+  LineBasicMaterial
+} from 'three'
 
 class GlobeScene extends BaseScene {
   setup () {
@@ -30,11 +41,12 @@ class GlobeScene extends BaseScene {
       points.push(new Vector3(sydney[0], sydney[1], sydney[2]))
       points.push(new Vector3(sydney2[0], sydney2[1], sydney2[2]))
       let geometry = new BufferGeometry().setFromPoints(points)
-      let material = new LineBasicMaterial({color: 0xff00ff})
+      let material = new LineBasicMaterial({ color: 0xff00ff })
       let data = new Line(geometry, material, 5)
       this.add(data)
     }
   }
+
   update () {
 
   }
@@ -53,4 +65,5 @@ function calcPosition (lat, lon, radius) {
   let y = ((radius) * Math.cos(phi))
   return [x, y, z]
 }
+
 export default GlobeScene
