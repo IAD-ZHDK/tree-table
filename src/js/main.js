@@ -13,11 +13,11 @@ class Main extends AbstractApplication {
     this.globeLayer = new GlobeLayer(this)
     this.globeLayer.setup()
 
-    this.boxExampleLayer = new BoxExampleLayer(this)
-    this.boxExampleLayer.setup()
+    // this.boxExampleLayer = new BoxExampleLayer(this)
+    // this.boxExampleLayer.setup()
 
     // add scenes
-    this.addLayer(this.boxExampleLayer)
+    // this.addLayer(this.boxExampleLayer)
     this.addLayer(this.globeLayer)
 
     // start animation renderer
