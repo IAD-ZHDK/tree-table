@@ -12,7 +12,7 @@ class BaseLayer {
 
   setup () {
     // camera defaults
-    this._camera.position.z = 400
+    this._camera.position.z = 200
 
     // controls defaults
     this._controls.enableDamping = true

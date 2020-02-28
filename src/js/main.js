@@ -1,7 +1,6 @@
 import AbstractApplication from 'views/AbstractApplication'
-import BoxExampleLayer from './layers/BoxExampleLayer'
+import GUILayer from './layers/GUILayer'
 import GlobeLayer from './layers/GlobeLayer'
-
 class Main extends AbstractApplication {
   constructor () {
     super()
@@ -12,14 +11,15 @@ class Main extends AbstractApplication {
     // define scenes
     this.globeLayer = new GlobeLayer(this)
     this.globeLayer.setup()
-
+    this.GUILayer = new GUILayer(this)
+    this.GUILayer.setup(this.globeLayer)
     // this.boxExampleLayer = new BoxExampleLayer(this)
     // this.boxExampleLayer.setup()
 
     // add scenes
     // this.addLayer(this.boxExampleLayer)
+    this.addLayer(this.GUILayer)
     this.addLayer(this.globeLayer)
-
     // start animation renderer
     this.animate()
   }
