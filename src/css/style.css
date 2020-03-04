@@ -6,10 +6,29 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    font-size: 11px;
+    line-height: normal;
+    font-family: "Lucida Grande", sans-serif;
 }
 
 a#magic-window {
     display: block;
     color: white;
     margin-top: 1em;
+}
+
+FullScreenButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -50pt;
+  margin-left: -50pt;
+  line-height: 20pt;
+  padding: 20pt 40pt;
+  background: grey;
+  z-index: 10000;
+  cursor: pointer
+}
+FullScreenButton:hover {
+  background: lightgrey;
 }

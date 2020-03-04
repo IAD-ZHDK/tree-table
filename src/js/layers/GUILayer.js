@@ -40,10 +40,15 @@ class GUILayer extends BaseLayer {
 
   update () {
     this.stats.update()
-    for (let i = 0; i < this.globLayer.POIS.length; i++) {
-      // if (this.globLayer.POIS[i].isVisible()) {
-      // this.globLayer.CartesianToCanvas(this.globLayer.POIS[i].pos)
-      // }
+    // for (let i = 0; i < this.globLayer.POIS.length; i++) {
+    // if (this.globLayer.POIS[i].isVisible()) {
+    // this.globLayer.CartesianToCanvas(this.globLayer.POIS[i].pos)
+    // }
+    // }
+    if (document.fullscreenElement) {
+      // curently fullscreen
+    } else {
+
     }
   }
 
@@ -87,12 +92,13 @@ class GUILayer extends BaseLayer {
   }
 
   addButton () {
-    let button = document.createElement('button')
+    let button = document.createElement('FullScreenButton')
     button.innerHTML = 'Open FullScreen'
     let body = document.getElementsByTagName('body')[0]
-    body.appendChild(button)
+    body.insertBefore(button, body.childNodes[0])
     button.addEventListener('click', function () {
       this.openFullscreen()
+      button.remove()
     }.bind(this))
   }
 
