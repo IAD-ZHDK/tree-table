@@ -15,7 +15,7 @@ class MapLayer extends BaseLayer {
     this._app.renderer.autoClear = false
     this._scene2 = new Scene()
     this._camera.position.z = 100
-    let spriteMap = new TextureLoader().load('static/textures/earthMono8k.jpg')
+    let spriteMap = new TextureLoader().load('static/textures/earthMono_8192 _4096.jpg')
     let spriteMaterial = new SpriteMaterial({ map: spriteMap, color: 0xffffff })
     this.sprite = new Sprite(spriteMaterial)
     let width = window.innerWidth
@@ -24,7 +24,6 @@ class MapLayer extends BaseLayer {
     this.sprite.scale.set(width, height, 8000)
     this._scene.add(this.sprite)
     this.sprite.visible = false
-
     /* Mask object  */
 
     let maskShape = new Shape()

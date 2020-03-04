@@ -37,8 +37,8 @@ class GlobeLayer extends BaseLayer {
     this.controls.zoomSpeed = 0.3
     this.matrix = new Matrix4() // matrix for camera movement
 
-    // todo: ask florian if there is a beter way to pass scope to event function
-    // todo: check what events are apropriate on table
+    // todo: ask florian if there is a better way to pass scope to event function
+    // todo: check what events are appropriate on table
     let context = this
     window.addEventListener('mousedown', function (event) {
       this.onDocumentMouseDown(event)
@@ -112,6 +112,9 @@ class GlobeLayer extends BaseLayer {
     for (let j = 0; j < this.POIS.length; j++) {
       this.POIS[ j ].update()
       this.POIS[ j ].isVisible(this._camera, this.EarthRadius)
+    }
+    for (let j = 0; j < this.DataObjects.length; j++) {
+      // this.DataObjects[ j ].updateLine()
     }
     this.controls.update()
   }

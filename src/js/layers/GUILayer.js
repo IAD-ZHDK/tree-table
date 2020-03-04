@@ -35,6 +35,7 @@ class GUILayer extends BaseLayer {
 
     /* Text Boxes */
     // possible inspiration: https://manu.ninja/webgl-three-js-annotations
+    this.addButton()
   }
 
   update () {
@@ -83,6 +84,29 @@ class GUILayer extends BaseLayer {
       context.gui.open()
       resolve()
     })
+  }
+
+  addButton () {
+    let button = document.createElement('button')
+    button.innerHTML = 'Open FullScreen'
+    let body = document.getElementsByTagName('body')[0]
+    body.appendChild(button)
+    button.addEventListener('click', function () {
+      this.openFullscreen()
+    }.bind(this))
+  }
+
+  openFullscreen () {
+    let elem = document.documentElement
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen()
+    } else if (elem.mozRequestFullScreen) { /* Firefox */
+      elem.mozRequestFullScreen()
+    } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+      elem.webkitRequestFullscreen()
+    } else if (elem.msRequestFullscreen) { /* IE/Edge */
+      elem.msRequestFullscreen()
+    }
   }
 
   async loadCSV (context) {

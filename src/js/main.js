@@ -28,5 +28,4 @@ class Main extends AbstractApplication {
     this.animate()
   }
 }
-
 export default Main
