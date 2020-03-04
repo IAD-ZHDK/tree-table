@@ -1,34 +1,48 @@
 import BaseLayer from './BaseLayer'
 import Stats from 'stats.js'
 import Papa from 'papaparse'
-import { Sprite, SpriteMaterial, TextureLoader } from 'three'
-
+import { BufferGeometry, Line, LineBasicMaterial, Sprite, SpriteMaterial, TextureLoader, Vector3 } from 'three'
 class GUILayer extends BaseLayer {
-  setup (globLayer) {
+  setup () {
     super.setup()
-    this.globLayer = globLayer
-    /* controls */
+    this.globLayer = this._app.globeLayer
+    this.mapLayer = this._app.mapLayer
+    /* Controls */
     this.controls.enableRotate = false
     this.controls.enableZoom = false
     this.controls.enablePan = false
     this.controls.minDistance = 0
     this.controls.maxDistance = 10
     this._camera.position.z = 1
+
     /* import Points of Interest data */
     /* create menu after loading data */
     this.main(this)
-    /* add fps stats */
+
+    /* Add FPS stats */
     this.stats = new Stats()
     this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild(this.stats.domElement)
+
+    /* OSC */
+    // const OSC = require('osc-js')
+    // this.osc = new OSC()
+    // this.osc.on('*', message => {console.log(message.args)
+    // })
+    // this.osc.on('/{foo,bar}/*/param', message => {console.log(message.args)
+    // })
+    // this.osc.open({ port: 8002 })
+
+    /* Text Boxes */
+    // possible inspiration: https://manu.ninja/webgl-three-js-annotations
   }
 
   update () {
     this.stats.update()
     for (let i = 0; i < this.globLayer.POIS.length; i++) {
-      if (this.globLayer.POIS[i].visible) {
-        this.globLayer.CartesianToCanvas(this.globLayer.POIS[i].pos)
-      }
+      // if (this.globLayer.POIS[i].isVisible()) {
+      // this.globLayer.CartesianToCanvas(this.globLayer.POIS[i].pos)
+      // }
     }
   }
 
@@ -47,7 +61,8 @@ class GUILayer extends BaseLayer {
         let parameters =
         {
           f: function () {
-            context.globLayer.animateToPoint(context.results[i].lat, context.results[i].lon)
+            let options = { lat: context.results[i].lat, lon: context.results[i].lon }
+            context.globLayer.animateToPoint(options)
           }
         }
         loc.add(parameters, 'f').name(context.results[i].name)
@@ -58,7 +73,12 @@ class GUILayer extends BaseLayer {
       }
       let datavis = context.gui.addFolder('data visual')
       datavis.add(settings, 'checkbox').onChange(function (value) {
-        context.globLayer.dataVisible(value)
+        context.globLayer.showData(value)
+      })
+      let map2D = context.gui.addFolder('Map 2D')
+      map2D.add(settings, 'checkbox').onChange(function (value) {
+        // context.globLayer.animateToPoint(0, 0)
+        context.mapLayer.showMap(value)
       })
       context.gui.open()
       resolve()

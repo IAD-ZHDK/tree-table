@@ -1,4 +1,6 @@
 import BaseLayer from './BaseLayer'
+import POI from '../assets/POI.js'
+import DataPoint from '../assets/DataPoint.js'
 import {
   SphereGeometry,
   Mesh,
@@ -9,15 +11,15 @@ import {
   Line,
   Vector3,
   BufferGeometry,
-  LineBasicMaterial,
   OctahedronGeometry,
   SpotLight,
   AmbientLight,
   Matrix4,
-  Clock,
   Raycaster,
   Vector2,
-  AxesHelper, Frustum
+  SpriteMaterial,
+  Sprite,
+  AxesHelper, Frustum, Color, LineBasicMaterial
 } from 'three'
 import TWEEN from '@tweenjs/tween.js'
 
@@ -34,16 +36,19 @@ class GlobeLayer extends BaseLayer {
     this.controls.dampingFactor = 0.01
     this.controls.zoomSpeed = 0.3
     this.matrix = new Matrix4() // matrix for camera movement
-    this.raycaster = new Raycaster()
-    this.mouse = new Vector2()
+
+    // todo: ask florian if there is a beter way to pass scope to event function
+    // todo: check what events are apropriate on table
     let context = this
-    window.addEventListener('mousemove', function (event) {
-      context.onMouseMove(event, context)
-    }, false)
-    // window.addEventListener('touchstart', this.onMouseMove, false)
+    window.addEventListener('mousedown', function (event) {
+      this.onDocumentMouseDown(event)
+    }.bind(this), false)
+    window.addEventListener('touchstart', function (event) {
+      this.onDocumentMouseDown(event)
+    }.bind(this), false)
 
     /* earth */
-    const EarthTexture = new TextureLoader().load('static/textures/earthMono10K.jpg' +
+    const EarthTexture = new TextureLoader().load('static/textures/earthMono_16384_8192.jpg' +
       '')
     let EarthGeometry = new SphereGeometry(this.EarthRadius, 100, 100)
     let EarthMaterial = new MeshPhongMaterial({ map: EarthTexture })
@@ -51,7 +56,7 @@ class GlobeLayer extends BaseLayer {
     // EarthMaterial.bumpMap = new TextureLoader().load('static/textures/gebco_08_rev_elev.png' +
     //  '')
     // specular reflection
-    EarthMaterial.specularMap = new TextureLoader().load('static/textures/earthspec1k.jpg' +
+    EarthMaterial.specularMap = new TextureLoader().load('static/textures/earthSpec_512_256.jpg' +
       '')
     EarthMaterial.shininess = 100
     // EarthMaterial.bumpScale = 20
@@ -81,39 +86,33 @@ class GlobeLayer extends BaseLayer {
 
     /* Points of interest */
     this.POIS = []
-    this.target = this.horizontalToCartesian(-37.8136, 144.9631, this.EarthRadius)
 
     /* dataPoint */
+
     this.DataObjects = []
-    // todo: need to correct for different map projection.
-    // todo: move to geodetic system rather than sphere
+    // todo: need to correct for different map projections.
     var crowtherData
     var myScene = this.scene
     var loader = new TextureLoader()
     var parent = this
     loader.load(
       // resource URL
-      'static/textures/gebco_08_rev_elev.png',
+      'static/textures/earthDepth_3000_1500.png',
       // onLoad callback
       function (texture) {
         crowtherData = parent.getImageData(texture.image)
-        // parent.drawData(myScene, crowtherData, texture.image.width, texture.image.height)
         parent.drawDataEvenDistribution(myScene, crowtherData, texture.image.width, texture.image.height, 6)
       })
     this.loadGioTiff()
   }
 
   update () {
-    if (this.animateFlag === true) {
-      // let point = this.target
-      // let camDistance = this._camera.position.length()
-      // this.camera.position.copy(point).normalize().multiplyScalar(camDistance)
-      this.animateFlag = false
-    }
     TWEEN.update()
-    this.racasting()
-    /* todo: check if POIS visible */
-
+    // make sure only POIs in front of the earth are rendered
+    for (let j = 0; j < this.POIS.length; j++) {
+      this.POIS[ j ].update()
+      this.POIS[ j ].isVisible(this._camera, this.EarthRadius)
+    }
     this.controls.update()
   }
 
@@ -139,68 +138,23 @@ class GlobeLayer extends BaseLayer {
       let v = Octahedron.vertices[i]
       let horizontal = this.cartesianToHorizontal(v.x, v.y, v.z)
 
-      let pointValue = this.getPixelvalues(imgdata, Math.round(horizontal[2] * imgWidth), Math.round((1 - horizontal[3]) * imgHeight))
+      let pointValue = this.getPixelValues(imgdata, Math.round(horizontal[2] * imgWidth), Math.round((1 - horizontal[3]) * imgHeight))
       if (pointValue >= 10) {
-        let line = this.dataLine(horizontal[0], horizontal[1], (pointValue / 20))
-        line.visible = false
-        this.DataObjects.push(line)
-        scene.add(line)
+        // let line = this.dataLine(horizontal[0], horizontal[1], (pointValue / 20))
+        let startLine = this.horizontalToCartesian(horizontal[0], horizontal[1], this.EarthRadius)
+        let endLine = this.horizontalToCartesian(horizontal[0], horizontal[1], this.EarthRadius + (pointValue / 10))
+        let dataPoint = new DataPoint(startLine, endLine)
+        this.DataObjects.push(dataPoint)
+        scene.add(dataPoint.getGeometry())
+        dataPoint.visible(false)
       }
-      // let line = this.line(v.x, v.y, v.z)
-      /*  var geometry = new SphereGeometry(2, 2, 2)
-      var material = new MeshBasicMaterial({ color: 0xffff00 })
-      var sphere = new Mesh(geometry, material)
-      sphere.position.x = v.x
-      sphere.position.y = v.y
-      sphere.position.z = v.z
-      this.scene.add(sphere) */
     }
   }
 
-  dataVisible (bool) {
+  showData (bool) {
     for (let i = 0; i < this.DataObjects.length; i++) {
-      this.DataObjects[i].visible = bool
+      this.DataObjects[i].visible(bool)
     }
-  }
-  drawData (scene, imgdata, width, height) {
-    // draw a 3D visualization of image data
-    // this method distributes data-points evenly across map texture, causing uneven distribution on 3D projection
-    for (let x = 0; x < width; x++) {
-      let lon = x / width
-      lon -= 0.5
-      lon *= 360.0
-      for (let y = 0; y < height; y++) {
-        let red = this.getPixelvalues(imgdata, x, height - y).r
-        let lat = y / height
-        lat -= 0.5
-        lat *= 180.0
-        let line = this.dataLine(lat, lon, (red / 10 + 1))
-        this.DataObjects.push(line)
-        scene.add(line)
-      }
-    }
-  }
-
-  dataLine (lat, lon, length) {
-    let points = []
-    let startLine = this.horizontalToCartesian(lat, lon, this.EarthRadius)
-    let endLine = this.horizontalToCartesian(lat, lon, this.EarthRadius + length)
-    points.push(startLine)
-    points.push(endLine)
-    let geometry = new BufferGeometry().setFromPoints(points)
-    let material = new LineBasicMaterial({ color: 0xff00ff })
-    let line = new Line(geometry, material, 5)
-    return line
-  }
-
-  line (x, y, z) {
-    let points = []
-    points.push(new Vector3(x, y, z))
-    points.push(new Vector3(x, y, z + 200))
-    let geometry = new BufferGeometry().setFromPoints(points)
-    let material = new LineBasicMaterial({ color: 0xff00ff })
-    let line = new Line(geometry, material, 5)
-    return line
   }
 
   radians (degrees) {
@@ -211,15 +165,8 @@ class GlobeLayer extends BaseLayer {
   newPOI (lat, lon, name) {
     // point of interest
     let location = this.horizontalToCartesian(lat, lon, this.EarthRadius)
-
-    let geometry = new SphereGeometry(1, 6, 6)
-    let material = new MeshBasicMaterial({ color: 0x00ffff })
-    let point = new Mesh(geometry, material)
-    point.position.x = location.x
-    point.position.y = location.y
-    point.position.z = location.z
-    this.POIS.push(point)
-    this.scene.add(point)
+    let newPOI = new POI(location, name, this.scene)
+    this.POIS.push(newPOI)
   }
 
   horizontalToCartesian (lat, lon, radius) {
@@ -235,7 +182,7 @@ class GlobeLayer extends BaseLayer {
   }
 
   CartesianToCanvas (x, y, z) {
-    // todo: teste if this is accurate
+    // todo: test if this is accurate
     let width = window.innerWidth
     let height = window.innerHeight
     let widthHalf = width / 2
@@ -260,14 +207,16 @@ class GlobeLayer extends BaseLayer {
     return [lat, lon, u, v]
   }
 
-  animateToPoint (lat, lon) {
-    this.animateFlag = true
-    this.target.copy(this.horizontalToCartesian(lat, lon, this.EarthRadius))
-    let camDistance = this._camera.position.length()
-    // this.camera.position.copy(target).normalize().multiplyScalar(camDistance)
-    let newPosition = this.target.normalize().multiplyScalar(camDistance)
-    let tween = new TWEEN.Tween(this._camera.position).to(this.target, 1000).start()
-    tween.easing(TWEEN.Easing.Exponential.InOut)
+  animateToPoint (options) {
+    let lat = options.lat || 0
+    let lon = options.lon || 0
+    let point = options.point || this.horizontalToCartesian(lat, lon, this.EarthRadius)
+    let camDistance = options.distance + this.EarthRadius || this._camera.position.length()
+    let target = point || this.horizontalToCartesian(lat, lon, this.EarthRadius)
+    // this.camera.position.copy(this.target).normalize().multiplyScalar(camDistance)
+    let newPosition = target.normalize().multiplyScalar(camDistance)
+    let tween = new TWEEN.Tween(this._camera.position).to(newPosition, 1000).start()
+    return tween.easing(TWEEN.Easing.Circular.InOut)
   }
 
   getImageData (image) {
@@ -279,31 +228,38 @@ class GlobeLayer extends BaseLayer {
     return context.getImageData(0, 0, image.width, image.height)
   }
 
-  getPixelvalues (imagedata, x, y) {
+  getPixelValues (imagedata, x, y) {
     // todo: need to modify to work with 32 bit image data
     let position = (x + imagedata.width * y) * 4
     let data = imagedata.data
     let total = (data[ position ] + data[ position + 1 ] + data[ position + 2 ])
-    // let alpha = data[ position + 3 ]
     return total
-    // return alpha
-    // return { r: data[ position ], g: data[ position + 1 ], b: data[ position + 2 ], a: data[ position + 3 ] }
   }
-  onMouseMove (event, context) {
-    // calculate mouse position in normalized device coordinates
-    // (-1 to +1) for both components
-    context.mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-    context.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
-  }
-  racasting () {
-    // update the picking ray with the camera and mouse position
-    this.raycaster.setFromCamera(this.mouse, this._camera)
 
+  onDocumentMouseDown (event) {
+    // update the mouse variable
+    let x = (event.clientX / window.innerWidth) * 2 - 1
+    let y = -(event.clientY / window.innerHeight) * 2 + 1
+    let mouse = new Vector3(x, y, 1)
+    // find intersections
+
+    // create a Ray with origin at the mouse position
+    // and direction into the scene (camera direction)
+    let vector = new Vector3(mouse.x, mouse.y, 1)
+
+    let ray = new Raycaster()
+    ray.setFromCamera(mouse, this._camera)
+    // create an array containing all objects in the scene with which the ray intersects
     // calculate objects intersecting the picking ray
-    var intersects = this.raycaster.intersectObjects(this.scene.children)
-
-    for (var i = 0; i < intersects.length; i++) {
-      // intersects[ i ].object.material.color.set(0xff0000)
+    let intersects = ray.intersectObjects(this.scene.children)
+    for (let i = 0; i < intersects.length; i++) {
+      // intersects[ i ].object.material.color.set(0xff00ff)
+      for (let j = 0; j < this.POIS.length; j++) {
+        if (intersects[ i ].object.name === this.POIS[ j ].name) {
+          let options = { point: this.POIS[ j ].position }
+          this.animateToPoint(options)
+        }
+      }
     }
   }
 }

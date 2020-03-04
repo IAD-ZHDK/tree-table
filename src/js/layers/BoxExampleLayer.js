@@ -14,5 +14,4 @@ class BoxExampleLayer extends BaseLayer {
     this.scene.add(this._mesh)
   }
 }
-
 export default BoxExampleLayer
