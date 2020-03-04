@@ -1,23 +1,34 @@
-import { PerspectiveCamera, Scene } from 'three'
+import { OrthographicCamera, PerspectiveCamera, Scene } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 class BaseLayer {
-  constructor (app) {
+  constructor (app, Orthographic) {
     this._app = app
     this._active = true
     this._scene = new Scene()
-    this._camera = new PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 5000)
-    this._controls = new OrbitControls(this._camera, app.renderer.domElement)
+
+    this.Orthographic = Orthographic || false
+    let width = window.innerWidth
+    let height = window.innerHeight
+    if (this.Orthographic) {
+      this._camera = new OrthographicCamera(-width / 2, width / 2, height / 2, -height / 2, 0, 1000)
+    } else {
+      this._camera = new PerspectiveCamera(70, width / height, 1, 5000)
+      this._controls = new OrbitControls(this._camera, app.renderer.domElement)
+    }
   }
 
   setup () {
-    // camera defaults
-    this._camera.position.z = 200
-
-    // controls defaults
-    this._controls.enableDamping = true
-    this._controls.dampingFactor = 0.25
-    this._controls.enableZoom = true
+    if (this.Orthographic) {
+      this._camera.position.z = 100
+    } else {
+      // camera defaults
+      this._camera.position.z = 200
+      // controls defaults
+      this._controls.enableDamping = true
+      this._controls.dampingFactor = 0.25
+      this._controls.enableZoom = true
+    }
   }
 
   update () {
