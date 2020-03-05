@@ -13,7 +13,7 @@ import {
   SpotLight,
   AmbientLight,
   Matrix4,
-  Raycaster,
+  Raycaster
 } from 'three'
 import TWEEN from '@tweenjs/tween.js'
 
