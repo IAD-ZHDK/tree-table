@@ -16,7 +16,6 @@ class Main extends AbstractApplication {
     this.globeLayer.setup()
     this.GUILayer = new GUILayer(this)
     this.GUILayer.setup()
-
     // this.boxExampleLayer = new BoxExampleLayer(this)
     // this.boxExampleLayer.setup()
 

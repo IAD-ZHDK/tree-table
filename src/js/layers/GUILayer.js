@@ -35,7 +35,11 @@ class GUILayer extends BaseLayer {
 
     /* Text Boxes */
     // possible inspiration: https://manu.ninja/webgl-three-js-annotations
-    this.addButton()
+    if (document.fullscreenElement) {
+      // curently fullscreen
+    } else {
+      this.addFullScreenButton()
+    }
   }
 
   update () {
@@ -45,11 +49,6 @@ class GUILayer extends BaseLayer {
     // this.globLayer.CartesianToCanvas(this.globLayer.POIS[i].pos)
     // }
     // }
-    if (document.fullscreenElement) {
-      // curently fullscreen
-    } else {
-
-    }
   }
 
   async main (context) {
@@ -91,7 +90,7 @@ class GUILayer extends BaseLayer {
     })
   }
 
-  addButton () {
+  addFullScreenButton () {
     let button = document.createElement('FullScreenButton')
     button.innerHTML = 'Open FullScreen'
     let body = document.getElementsByTagName('body')[0]

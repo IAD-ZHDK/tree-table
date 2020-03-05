@@ -8,18 +8,12 @@ import {
   MeshPhongMaterial,
   TextureLoader,
   BackSide,
-  Line,
   Vector3,
-  BufferGeometry,
   OctahedronGeometry,
   SpotLight,
   AmbientLight,
   Matrix4,
   Raycaster,
-  Vector2,
-  SpriteMaterial,
-  Sprite,
-  AxesHelper, Frustum, Color, LineBasicMaterial
 } from 'three'
 import TWEEN from '@tweenjs/tween.js'
 
@@ -30,7 +24,7 @@ class GlobeLayer extends BaseLayer {
     /* controls */
     // disable zoom for globe
     this.controls.enablePan = false
-    this.controls.minDistance = this.EarthRadius + 10
+    this.controls.minDistance = this.EarthRadius + 30
     this.controls.maxDistance = this.EarthRadius * 3.5
     this.controls.enableDamping = true
     this.controls.dampingFactor = 0.01
@@ -41,10 +35,10 @@ class GlobeLayer extends BaseLayer {
     // todo: check what events are appropriate on table
     let context = this
     window.addEventListener('mousedown', function (event) {
-      this.onDocumentMouseDown(event)
+      this.onDocumentPress(event)
     }.bind(this), false)
-    window.addEventListener('touchstart', function (event) {
-      this.onDocumentMouseDown(event)
+    window.addEventListener('ontouchstart', function (event) {
+      this.onDocumentPress(event)
     }.bind(this), false)
 
     /* earth */
@@ -88,8 +82,8 @@ class GlobeLayer extends BaseLayer {
     this.POIS = []
 
     /* dataPoint */
-
     this.DataObjects = []
+
     // todo: need to correct for different map projections.
     var crowtherData
     var myScene = this.scene
@@ -112,9 +106,6 @@ class GlobeLayer extends BaseLayer {
     for (let j = 0; j < this.POIS.length; j++) {
       this.POIS[ j ].update()
       this.POIS[ j ].isVisible(this._camera, this.EarthRadius)
-    }
-    for (let j = 0; j < this.DataObjects.length; j++) {
-      // this.DataObjects[ j ].updateLine()
     }
     this.controls.update()
   }
@@ -239,7 +230,7 @@ class GlobeLayer extends BaseLayer {
     return total
   }
 
-  onDocumentMouseDown (event) {
+  onDocumentPress (event) {
     // update the mouse variable
     let x = (event.clientX / window.innerWidth) * 2 - 1
     let y = -(event.clientY / window.innerHeight) * 2 + 1

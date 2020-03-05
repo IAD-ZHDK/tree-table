@@ -32,7 +32,6 @@ class MapLayer extends BaseLayer {
       .lineTo(width / 2, height / 2)
       .lineTo(width / 2, -height / 2)
       .lineTo(-width / 2, -height / 2)
-    // .absarc(55, 20, 100, 0, Math.PI * 2, true)
     let maskHole = new Shape()
       .moveTo(0, 0)
       .absarc(0, 0, 20, 0, Math.PI * 2, true)

@@ -1,6 +1,6 @@
 import {
   SpriteMaterial,
-  Sprite, SphereGeometry, Mesh, TextureLoader, Color, Vector3, BufferGeometry, LineBasicMaterial, Line, Vector2, LineDashedMaterial
+  Sprite, TextureLoader, Color, Vector3, BufferGeometry, LineBasicMaterial, Line, Vector2, LineDashedMaterial
 } from 'three'
 class POI {
   constructor (position, name, scene) {
@@ -10,8 +10,7 @@ class POI {
     this.position = position
     this.textBox = new Vector2(0, 0)
     this.position2D = new Vector2(0, 0)
-    this.material.depthWrite = false
-    this.material.depthTest = false
+
     // this.line = this.connectionLine(position.x, position.y, position.z)
     // scene.add(this.line)
     // 3D POI
@@ -27,6 +26,7 @@ class POI {
     // this.POIS.push(point)
     scene.add(point)
     */
+
     // Sprite
     this.sprite = new Sprite(this.material)
     this.sprite.position.x = position.x
@@ -62,10 +62,14 @@ class POI {
     // check if distance is greater than camera to earth tangent edge.
     let L = Math.sqrt(Math.pow(cameraToEarth, 2) - Math.pow(earthRadius, 2))
     if (cameraToPOI.length() > L) {
-      this.sprite.visible = false
+      this.material.depthWrite = true
+      this.material.depthTest = true
+      // this.sprite.visible = false
       return false
     } else {
-      this.sprite.visible = true
+      this.material.depthWrite = false
+      this.material.depthTest = false
+      // this.sprite.visible = true
       return true
     }
   }
