@@ -3,10 +3,12 @@ import GUILayer from './layers/GUILayer'
 import GlobeLayer from './layers/GlobeLayer'
 import MapLayer from './layers/MapLayer'
 import TrackingClient from './io/TrackingClient'
+
 class Main extends AbstractApplication {
   constructor () {
     super()
 
+    // todo: add interval to update clients
     this._trackingClient = new TrackingClient('localhost', 7000)
 
     // set clear color to transparent

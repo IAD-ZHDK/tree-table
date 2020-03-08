@@ -32,3 +32,10 @@ FullScreenButton {
 FullScreenButton:hover {
   background: lightgrey;
 }
+
+.tactileInfo {
+  position: absolute;
+  left: 10pt;
+  top: 95%;
+  z-index: 10000;
+}

@@ -5,8 +5,9 @@ import { BufferGeometry, Line, LineBasicMaterial, Sprite, SpriteMaterial, Textur
 class GUILayer extends BaseLayer {
   setup () {
     super.setup()
-    this.globLayer = this._app.globeLayer
-    this.mapLayer = this._app.mapLayer
+    this.globLayer = this.app.globeLayer
+    this.mapLayer = this.app.mapLayer
+
     /* Controls */
     this.controls.enableRotate = false
     this.controls.enableZoom = false
@@ -31,6 +32,9 @@ class GUILayer extends BaseLayer {
     } else {
       this.addFullScreenButton()
     }
+
+    // tactile info
+    this._tactileInfo = document.getElementsByClassName('tactileInfo')[0]
   }
 
   update () {
@@ -40,6 +44,9 @@ class GUILayer extends BaseLayer {
     // this.globLayer.CartesianToCanvas(this.globLayer.POIS[i].pos)
     // }
     // }
+
+    // display how many devices are tracked
+    this._tactileInfo.textContent = `Devices: ${this.app.trackingClient.devices.length}`
   }
 
   async main (context) {
