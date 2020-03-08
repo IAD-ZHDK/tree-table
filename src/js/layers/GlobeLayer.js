@@ -1,6 +1,6 @@
 import BaseLayer from './BaseLayer'
-import POI from '../assets/POI.js'
-import DataPoint from '../assets/DataPoint.js'
+import POI from '../model/POI.js'
+import DataPoint from '../model/DataPoint.js'
 import {
   SphereGeometry,
   Mesh,
