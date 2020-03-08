@@ -1,5 +1,5 @@
 import './css/style.css'
-import Main from './js/main'
+import TableApplication from './js/TableApplication'
 
 // eslint-disable-next-line
-new Main()
+new TableApplication()

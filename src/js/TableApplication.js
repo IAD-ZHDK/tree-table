@@ -4,7 +4,7 @@ import GlobeLayer from './layers/GlobeLayer'
 import MapLayer from './layers/MapLayer'
 import TrackingClient from './io/TrackingClient'
 
-class Main extends AbstractApplication {
+class TableApplication extends AbstractApplication {
   constructor () {
     super()
 
@@ -37,4 +37,4 @@ class Main extends AbstractApplication {
     return this._trackingClient
   }
 }
-export default Main
+export default TableApplication
