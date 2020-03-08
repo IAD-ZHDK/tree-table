@@ -2,9 +2,12 @@ import AbstractApplication from 'views/AbstractApplication'
 import GUILayer from './layers/GUILayer'
 import GlobeLayer from './layers/GlobeLayer'
 import MapLayer from './layers/MapLayer'
+import TrackingClient from './io/TrackingClient'
 class Main extends AbstractApplication {
   constructor () {
     super()
+
+    this._trackingClient = new TrackingClient('localhost', 7000)
 
     // set clear color to transparent
     this.renderer.setClearColor(0xffffff, 0)
@@ -23,8 +26,13 @@ class Main extends AbstractApplication {
     this.addLayer(this.globeLayer)
     this.addLayer(this.GUILayer)
     this.addLayer(this.mapLayer)
+
     // start animation renderer
     this.animate()
+  }
+
+  get trackingClient () {
+    return this._trackingClient
   }
 }
 export default Main

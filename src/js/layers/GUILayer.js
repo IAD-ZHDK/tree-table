@@ -24,15 +24,6 @@ class GUILayer extends BaseLayer {
     this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild(this.stats.domElement)
 
-    /* OSC */
-    // const OSC = require('osc-js')
-    // this.osc = new OSC()
-    // this.osc.on('*', message => {console.log(message.args)
-    // })
-    // this.osc.on('/{foo,bar}/*/param', message => {console.log(message.args)
-    // })
-    // this.osc.open({ port: 8002 })
-
     /* Text Boxes */
     // possible inspiration: https://manu.ninja/webgl-three-js-annotations
     if (document.fullscreenElement) {
