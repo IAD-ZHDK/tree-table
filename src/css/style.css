@@ -19,30 +19,29 @@ a#magic-window {
 
 FullScreenButton {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -50pt;
-  margin-left: -50pt;
+  top: 50px;
+  left: 5px;
+  width: auto;
+  height:auto;
   line-height: 20pt;
-  padding: 20pt 40pt;
-  background: grey;
+  padding: 5px 15px 5px 15px;
+  background: #0000ff;
+  opacity: 1;
+  color: #fff;
   z-index: 10000;
   cursor: pointer
 }
 
 FullScreenButton:hover {
-  background: lightgrey;
+  background: #eeeeff;
 }
-.textBox{
+.txtBxWrap{
   position: absolute;
-  /*top:50%;*/
-  /*left:50%;*/
   z-index: 10001;
-  /*transform: translate(-50%,-50%);*/
   width:150px;
   height: 50px;
   background-color: #000;
-  border-radius: 1px;
+  border-radius: 4px;
   opacity: 0.0;
   transition:opacity 0.5s, height 0.5s, width 0.5s;
   overflow: hidden;
@@ -50,16 +49,26 @@ FullScreenButton:hover {
   border-width: 1px;
   border-color: #FFF;
 }
-.textBox:hover{
+.textBox{
+  position: absolute;
+  z-index: 10002;
+  width: calc(100% + 20px);
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.txtBxWrap:hover{
   opacity: 1.0;
   width:250px;
   height:250px;
+  cursor:pointer;
 }
 .textBoxContent{
   font-family: Helvetica Neue, sans-serif;
   font-size:12px;
   color: #FFF;
-  padding:25px 25px 25px 25px;
+  padding:25px 45px 25px 25px;
 }
 .tactileInfo {
   position: absolute;

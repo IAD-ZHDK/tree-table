@@ -50,7 +50,7 @@ class GUILayer extends BaseLayer {
     // updating the canvas elements
     this.globLayer.POIS.forEach((element, i) => {
       let localPos = this.globLayer.CartesianToCanvas(element.position.x, element.position.y, element.position.z)
-      let textBoxes = document.getElementsByClassName('textBox')
+      let textBoxes = document.getElementsByClassName('txtBxWrap')
       // eslint-disable-next-line eqeqeq
       if (element.visibility) {
         textBoxes[i].style.opacity = '0.75'
@@ -109,9 +109,11 @@ class GUILayer extends BaseLayer {
   }
 
   addTextBox (title, content, x, y) {
+    let txtBxWrap = document.createElement('div')
     let textBox = document.createElement('div')
-    textBox.setAttribute('class', 'textBox')
     let textBoxTitle = document.createElement('p')
+    txtBxWrap.setAttribute('class', 'txtBxWrap')
+    textBox.setAttribute('class', 'textBox')
     textBoxTitle.setAttribute('class', 'textBoxContent')
     textBoxTitle.textContent = title
     let textBoxContent = document.createElement('p')
@@ -119,14 +121,15 @@ class GUILayer extends BaseLayer {
     textBoxContent.textContent = content
     textBox.appendChild(textBoxTitle)
     textBox.appendChild(textBoxContent)
-    document.body.appendChild(textBox)
-    textBox.style.left = x + 'px'
-    textBox.style.top = y + 'px'
+    txtBxWrap.appendChild(textBox)
+    document.body.appendChild(txtBxWrap)
+    txtBxWrap.style.left = x + 'px'
+    txtBxWrap.style.top = y + 'px'
   }
 
   addFullScreenButton () {
     let button = document.createElement('FullScreenButton')
-    button.innerHTML = 'Open FullScreen'
+    button.innerHTML = '[ + ]'
     let body = document.getElementsByTagName('body')[0]
     body.insertBefore(button, body.childNodes[0])
     button.addEventListener('click', function () {
