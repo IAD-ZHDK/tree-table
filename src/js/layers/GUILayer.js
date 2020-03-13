@@ -50,15 +50,21 @@ class GUILayer extends BaseLayer {
     // updating the canvas elements
     this.globLayer.POIS.forEach((element, i) => {
       let localPos = this.globLayer.CartesianToCanvas(element.position.x, element.position.y, element.position.z)
-      let textBoxes = document.getElementsByClassName('txtBxWrap')
+      let infoCards = document.getElementsByClassName('infoCardWrap')
       // eslint-disable-next-line eqeqeq
       if (element.visibility) {
-        textBoxes[i].style.opacity = '0.75'
+        // infoCards[i].style.opacity = '0.5'
+        infoCards[i].classList.add('visibleCard')
+        infoCards[i].classList.remove('invisibleCard')
       } else {
-        textBoxes[i].style.opacity = '0.05'
+        // infoCards[i].style.opacity = '0.05'
+        infoCards[i].classList.remove('visibleCard')
+        infoCards[i].classList.add('invisibleCard')
+        // infoCards[i].removeEventListener('click', function () { })
+        infoCards[i].classList.remove('openCard')
       }
-      textBoxes[i].style.left = localPos.x + 'px'
-      textBoxes[i].style.top = localPos.y + 'px'
+      infoCards[i].style.left = localPos.x + 'px'
+      infoCards[i].style.top = localPos.y + 'px'
     })
     this._tactileInfo.textContent = `Devices: ${this.app.trackingClient.devices.length}`
   }
@@ -71,7 +77,7 @@ class GUILayer extends BaseLayer {
       let content = element.content
       let title = element.name
       console.log('x' + element.position.x, 'y' + element.position.y, 'z' + element.position.z)
-      this.addTextBox(title, content, position.x, position.y)
+      this.addInfoCard(title, content, position.x, position.y)
     })
   }
   makeTestMenu (context) {
@@ -108,23 +114,26 @@ class GUILayer extends BaseLayer {
     })
   }
 
-  addTextBox (title, content, x, y) {
-    let txtBxWrap = document.createElement('div')
-    let textBox = document.createElement('div')
-    let textBoxTitle = document.createElement('p')
-    txtBxWrap.setAttribute('class', 'txtBxWrap')
-    textBox.setAttribute('class', 'textBox')
-    textBoxTitle.setAttribute('class', 'textBoxContent')
-    textBoxTitle.textContent = title
-    let textBoxContent = document.createElement('p')
-    textBoxContent.setAttribute('class', 'textBoxContent')
-    textBoxContent.textContent = content
-    textBox.appendChild(textBoxTitle)
-    textBox.appendChild(textBoxContent)
-    txtBxWrap.appendChild(textBox)
-    document.body.appendChild(txtBxWrap)
-    txtBxWrap.style.left = x + 'px'
-    txtBxWrap.style.top = y + 'px'
+  addInfoCard (title, content, x, y) {
+    let infoCardWrap = document.createElement('div')
+    let infoCard = document.createElement('div')
+    let infoCardTitle = document.createElement('p')
+    infoCardWrap.setAttribute('class', 'infoCardWrap')
+    infoCard.setAttribute('class', 'infoCard')
+    infoCardTitle.setAttribute('class', 'infoCardContent')
+    infoCardTitle.textContent = title
+    let infoCardContent = document.createElement('p')
+    infoCardContent.setAttribute('class', 'infoCardContent')
+    infoCardContent.textContent = content
+    infoCard.appendChild(infoCardTitle)
+    infoCard.appendChild(infoCardContent)
+    infoCardWrap.appendChild(infoCard)
+    document.body.appendChild(infoCardWrap)
+    infoCardWrap.addEventListener('click', function () {
+      infoCardWrap.classList.toggle('openCard')
+    })
+    infoCardWrap.style.left = x + 'px'
+    infoCardWrap.style.top = y + 'px'
   }
 
   addFullScreenButton () {
