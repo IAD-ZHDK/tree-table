@@ -156,10 +156,10 @@ class GlobeLayer extends BaseLayer {
     return radians
   }
 
-  newPOI (lat, lon, name) {
+  newPOI (lat, lon, name, content) {
     // point of interest
     let location = this.horizontalToCartesian(lat, lon, this.EarthRadius)
-    let newPOI = new POI(location, name, this.scene)
+    let newPOI = new POI(location, name, this.scene, content)
     this.POIS.push(newPOI)
   }
 
@@ -177,6 +177,7 @@ class GlobeLayer extends BaseLayer {
 
   CartesianToCanvas (x, y, z) {
     // todo: test if this is accurate
+    // yei!done this is accurate !
     let width = window.innerWidth
     let height = window.innerHeight
     let widthHalf = width / 2
@@ -200,7 +201,7 @@ class GlobeLayer extends BaseLayer {
     let lon = -180 + (u * 360)
     return [lat, lon, u, v]
   }
-
+  // check this the transformation from the attractors send the text boxes far away
   animateToPoint (options) {
     let lat = options.lat || 0
     let lon = options.lon || 0

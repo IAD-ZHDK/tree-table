@@ -7,7 +7,6 @@ class GUILayer extends BaseLayer {
     super.setup()
     this.globLayer = this.app.globeLayer
     this.mapLayer = this.app.mapLayer
-
     /* Controls */
     this.controls.enableRotate = false
     this.controls.enableZoom = false
@@ -15,11 +14,10 @@ class GUILayer extends BaseLayer {
     this.controls.minDistance = 0
     this.controls.maxDistance = 10
     this._camera.position.z = 1
-
     /* import Points of Interest data */
     /* create menu after loading data */
-    this.main(this)
 
+    this.main(this)
     /* Add FPS stats */
     this.stats = new Stats()
     this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -27,6 +25,8 @@ class GUILayer extends BaseLayer {
 
     /* Text Boxes */
     // possible inspiration: https://manu.ninja/webgl-three-js-annotations
+    console.log('something print this yes no yes no yes')
+    // adding the full screen button
     if (document.fullscreenElement) {
       // curently fullscreen
     } else {
@@ -46,14 +46,34 @@ class GUILayer extends BaseLayer {
     // }
 
     // display how many devices are tracked
+
+    // updating the canvas elements
+    this.globLayer.POIS.forEach((element, i) => {
+      let localPos = this.globLayer.CartesianToCanvas(element.position.x, element.position.y, element.position.z)
+      let textBoxes = document.getElementsByClassName('textBox')
+      // eslint-disable-next-line eqeqeq
+      if (element.visibility) {
+        textBoxes[i].style.opacity = '0.75'
+      } else {
+        textBoxes[i].style.opacity = '0.05'
+      }
+      textBoxes[i].style.left = localPos.x + 'px'
+      textBoxes[i].style.top = localPos.y + 'px'
+    })
     this._tactileInfo.textContent = `Devices: ${this.app.trackingClient.devices.length}`
   }
 
   async main (context) {
     await context.loadCSV(context)
     await context.makeTestMenu(context)
+    this.globLayer.POIS.forEach(element => {
+      let position = this.globLayer.CartesianToCanvas(element.position.x, element.position.y, element.position.z)
+      let content = element.content
+      let title = element.name
+      console.log('x' + element.position.x, 'y' + element.position.y, 'z' + element.position.z)
+      this.addTextBox(title, content, position.x, position.y)
+    })
   }
-
   makeTestMenu (context) {
     /* simple gui */
     return new Promise(function (resolve) {
@@ -86,6 +106,22 @@ class GUILayer extends BaseLayer {
       context.gui.open()
       resolve()
     })
+  }
+
+  addTextBox (title, content, x, y) {
+    let textBox = document.createElement('div')
+    textBox.setAttribute('class', 'textBox')
+    let textBoxTitle = document.createElement('p')
+    textBoxTitle.setAttribute('class', 'textBoxContent')
+    textBoxTitle.textContent = title
+    let textBoxContent = document.createElement('p')
+    textBoxContent.setAttribute('class', 'textBoxContent')
+    textBoxContent.textContent = content
+    textBox.appendChild(textBoxTitle)
+    textBox.appendChild(textBoxContent)
+    document.body.appendChild(textBox)
+    textBox.style.left = x + 'px'
+    textBox.style.top = y + 'px'
   }
 
   addFullScreenButton () {
@@ -123,7 +159,7 @@ class GUILayer extends BaseLayer {
         complete: function (data) {
           context.results = data.data
           for (let i = 0; i < context.results.length - 1; i++) {
-            context.globLayer.newPOI(context.results[i].lat, context.results[i].lon, context.results[i].name)
+            context.globLayer.newPOI(context.results[i].lat, context.results[i].lon, context.results[i].name, context.results[i].text)
           }
           resolve()
         }

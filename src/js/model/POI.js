@@ -3,14 +3,15 @@ import {
   Sprite, TextureLoader, Color, Vector3, BufferGeometry, LineBasicMaterial, Line, Vector2, LineDashedMaterial
 } from 'three'
 class POI {
-  constructor (position, name, scene) {
+  constructor (position, name, scene, content) {
     const texture = new TextureLoader().load('static/textures/POI.png' + '')
     this.material = new SpriteMaterial({ map: texture, fog: false, rotation: Math.PI / 4 })
     this.name = name
     this.position = position
     this.textBox = new Vector2(0, 0)
     this.position2D = new Vector2(0, 0)
-
+    this.content = content
+    this.visibility = false
     // this.line = this.connectionLine(position.x, position.y, position.z)
     // scene.add(this.line)
     // 3D POI
@@ -65,10 +66,12 @@ class POI {
       this.material.depthWrite = true
       this.material.depthTest = true
       // this.sprite.visible = false
+      this.visibility = false
       return false
     } else {
       this.material.depthWrite = false
       this.material.depthTest = false
+      this.visibility = true
       // this.sprite.visible = true
       return true
     }

@@ -29,10 +29,38 @@ FullScreenButton {
   z-index: 10000;
   cursor: pointer
 }
+
 FullScreenButton:hover {
   background: lightgrey;
 }
-
+.textBox{
+  position: absolute;
+  /*top:50%;*/
+  /*left:50%;*/
+  z-index: 10001;
+  /*transform: translate(-50%,-50%);*/
+  width:150px;
+  height: 50px;
+  background-color: #000;
+  border-radius: 1px;
+  opacity: 0.0;
+  transition:opacity 0.5s, height 0.5s, width 0.5s;
+  overflow: hidden;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #FFF;
+}
+.textBox:hover{
+  opacity: 1.0;
+  width:250px;
+  height:250px;
+}
+.textBoxContent{
+  font-family: Helvetica Neue, sans-serif;
+  font-size:12px;
+  color: #FFF;
+  padding:25px 25px 25px 25px;
+}
 .tactileInfo {
   position: absolute;
   left: 10pt;
