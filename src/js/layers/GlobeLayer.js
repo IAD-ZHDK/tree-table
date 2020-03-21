@@ -1,6 +1,7 @@
 import BaseLayer from './BaseLayer'
 import POI from '../model/POI.js'
 import DataPoint from '../model/DataPoint.js'
+import GeoUtil from '../utils/GeoUtil.js'
 import {
   SphereGeometry,
   Mesh,
@@ -130,13 +131,13 @@ class GlobeLayer extends BaseLayer {
     let Octahedron = new OctahedronGeometry(this.EarthRadius, detail)
     for (let i = 0; i < Octahedron.vertices.length; i++) {
       let v = Octahedron.vertices[i]
-      let horizontal = this.cartesianToHorizontal(v.x, v.y, v.z)
+      let horizontal = GeoUtil.cartesianToHorizontal(v.x, v.y, v.z)
 
       let pointValue = this.getPixelValues(imgdata, Math.round(horizontal[2] * imgWidth), Math.round((1 - horizontal[3]) * imgHeight))
       if (pointValue >= 10) {
         // let line = this.dataLine(horizontal[0], horizontal[1], (pointValue / 20))
-        let startLine = this.horizontalToCartesian(horizontal[0], horizontal[1], this.EarthRadius)
-        let endLine = this.horizontalToCartesian(horizontal[0], horizontal[1], this.EarthRadius + (pointValue / 10))
+        let startLine = GeoUtil.horizontalToCartesian(horizontal[0], horizontal[1], this.EarthRadius)
+        let endLine = GeoUtil.horizontalToCartesian(horizontal[0], horizontal[1], this.EarthRadius + (pointValue / 10))
         let dataPoint = new DataPoint(startLine, endLine)
         this.DataObjects.push(dataPoint)
         scene.add(dataPoint.getGeometry())
@@ -151,63 +152,19 @@ class GlobeLayer extends BaseLayer {
     }
   }
 
-  radians (degrees) {
-    let radians = degrees * (Math.PI / 180)
-    return radians
-  }
-
   newPOI (lat, lon, name, content) {
     // point of interest
-    let location = this.horizontalToCartesian(lat, lon, this.EarthRadius)
-    let newPOI = new POI(location, name, this.scene, content)
+    let newPOI = new POI(lat, lon,this.EarthRadius, name, this.scene, content)
     this.POIS.push(newPOI)
   }
 
-  horizontalToCartesian (lat, lon, radius) {
-    // returns cartesian coordinates (relative of earth center) based of longitude and latitude
-    let phi = this.radians(90 - lat)
-    let theta = this.radians(lon + 180)
-    let x = -((radius) * Math.sin(phi) * Math.cos(theta))
-    let z = ((radius) * Math.sin(phi) * Math.sin(theta))
-    let y = ((radius) * Math.cos(phi))
-    let pos = new Vector3(x, y, z)
-    return pos
-    // return { x: x, y: y, z: z }
-  }
-
-  CartesianToCanvas (x, y, z) {
-    // todo: test if this is accurate
-    // yei!done this is accurate !
-    let width = window.innerWidth
-    let height = window.innerHeight
-    let widthHalf = width / 2
-    let heightHalf = height / 2
-    let pos = new Vector3(x, y, z)
-    let pos2D = pos.clone()
-    pos.project(this._camera)
-    pos.x = (pos.x * widthHalf) + widthHalf
-    pos.y = -(pos.y * heightHalf) + heightHalf
-    return { x: pos.x, y: pos.y }
-  }
-
-  cartesianToHorizontal (x, y, z) {
-    // returns longitude and latitude based on cartesian coordinates (relative of earth center)
-    // ref: https://en.wikipedia.org/wiki/UV_mapping#Finding_UV_on_a_sphere
-    let unitVector = new Vector3(x, y, z)
-    unitVector.normalize()
-    let u = 0.5 + (Math.atan2(unitVector.z, unitVector.x) / (2 * Math.PI))
-    let v = 0.5 - (Math.asin(unitVector.y) / Math.PI)
-    let lat = -90 + (v * 180)
-    let lon = -180 + (u * 360)
-    return [lat, lon, u, v]
-  }
   // check this the transformation from the attractors send the text boxes far away
   animateToPoint (options) {
     let lat = options.lat || 0
     let lon = options.lon || 0
-    let point = options.point || this.horizontalToCartesian(lat, lon, this.EarthRadius)
+    let point = GeoUtil.horizontalToCartesian(lat, lon, this.EarthRadius)
     let camDistance = options.distance + this.EarthRadius || this._camera.position.length()
-    let target = point || this.horizontalToCartesian(lat, lon, this.EarthRadius)
+    let target = point
     // this.camera.position.copy(this.target).normalize().multiplyScalar(camDistance)
     let newPosition = target.normalize().multiplyScalar(camDistance)
     let tween = new TWEEN.Tween(this._camera.position).to(newPosition, 1000).start()
@@ -251,7 +208,7 @@ class GlobeLayer extends BaseLayer {
       // intersects[ i ].object.material.color.set(0xff00ff)
       for (let j = 0; j < this.POIS.length; j++) {
         if (intersects[ i ].object.name === this.POIS[ j ].name) {
-          let options = { point: this.POIS[ j ].position }
+          let options = { lat: this.POIS[ j ].lat, lon: this.POIS[ j ].lon }
           this.animateToPoint(options)
         }
       }

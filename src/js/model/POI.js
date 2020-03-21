@@ -2,40 +2,25 @@ import {
   SpriteMaterial,
   Sprite, TextureLoader, Color, Vector3, BufferGeometry, LineBasicMaterial, Line, Vector2, LineDashedMaterial
 } from 'three'
+import GeoUtil from '../utils/GeoUtil'
+
 class POI {
-  constructor (position, name, scene, content) {
+  constructor (lat, lon, EarthRadius, name, scene, content) {
     const texture = new TextureLoader().load('static/textures/POI.png' + '')
     this.material = new SpriteMaterial({ map: texture, fog: false, rotation: Math.PI / 4 })
     this.name = name
-    this.position = position
-    this.textBox = new Vector2(0, 0)
-    this.position2D = new Vector2(0, 0)
     this.content = content
     this.visibility = false
-    // this.line = this.connectionLine(position.x, position.y, position.z)
-    // scene.add(this.line)
-    // 3D POI
-    /*
-    let geometry = new SphereGeometry(3, 6, 6)
-    // let material = new MeshBasicMaterial({ color: 0x00ffff })
-    let point = new Mesh(geometry)
-    point.position.x = location.x
-    point.position.y = location.y
-    point.position.z = location.z
-    point.visible = true
-    point.name = name
-    // this.POIS.push(point)
-    scene.add(point)
-    */
-
+    this.lat = lat
+    this.lon = lon
+    this.position = GeoUtil.horizontalToCartesian(lat, lon, EarthRadius)
     // Sprite
     this.sprite = new Sprite(this.material)
-    this.sprite.position.x = position.x
-    this.sprite.position.y = position.y
-    this.sprite.position.z = position.z
+    this.sprite.position.x = this.position.x
+    this.sprite.position.y = this.position.y
+    this.sprite.position.z = this.position.z
     this.sprite.scale.set(3, 3, 1)
     this.sprite.name = name
-    //
     scene.add(this.sprite)
     this.timer = 0
   }
@@ -65,14 +50,12 @@ class POI {
     if (cameraToPOI.length() > L) {
       this.material.depthWrite = true
       this.material.depthTest = true
-      // this.sprite.visible = false
       this.visibility = false
       return false
     } else {
       this.material.depthWrite = false
       this.material.depthTest = false
       this.visibility = true
-      // this.sprite.visible = true
       return true
     }
   }

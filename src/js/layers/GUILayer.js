@@ -1,6 +1,7 @@
 import BaseLayer from './BaseLayer'
 import Stats from 'stats.js'
 import Papa from 'papaparse'
+import GeoUtil from '../utils/GeoUtil.js'
 import { BufferGeometry, Line, LineBasicMaterial, Sprite, SpriteMaterial, TextureLoader, Vector3 } from 'three'
 class GUILayer extends BaseLayer {
   setup () {
@@ -39,17 +40,11 @@ class GUILayer extends BaseLayer {
 
   update () {
     this.stats.update()
-    // for (let i = 0; i < this.globLayer.POIS.length; i++) {
-    // if (this.globLayer.POIS[i].isVisible()) {
-    // this.globLayer.CartesianToCanvas(this.globLayer.POIS[i].pos)
-    // }
-    // }
-
     // display how many devices are tracked
 
     // updating the canvas elements
     this.globLayer.POIS.forEach((element, i) => {
-      let localPos = this.globLayer.CartesianToCanvas(element.position.x, element.position.y, element.position.z)
+      let localPos = GeoUtil.CartesianToCanvas(element.position.x, element.position.y, element.position.z, this.globLayer._camera)
       let infoCards = document.getElementsByClassName('infoCardWrap')
       // eslint-disable-next-line eqeqeq
       if (element.visibility) {
@@ -73,13 +68,14 @@ class GUILayer extends BaseLayer {
     await context.loadCSV(context)
     await context.makeTestMenu(context)
     this.globLayer.POIS.forEach(element => {
-      let position = this.globLayer.CartesianToCanvas(element.position.x, element.position.y, element.position.z)
+      let position = GeoUtil.CartesianToCanvas(element.position.x, element.position.y, element.position.z, this.globLayer._camera)
       let content = element.content
       let title = element.name
       console.log('x' + element.position.x, 'y' + element.position.y, 'z' + element.position.z)
       this.addInfoCard(title, content, position.x, position.y)
     })
   }
+
   makeTestMenu (context) {
     /* simple gui */
     return new Promise(function (resolve) {

@@ -14,6 +14,11 @@ class NumberUtil {
 
     return value + (delta * alpha)
   }
+
+  static radians (degrees) {
+    let radians = degrees * (Math.PI / 180)
+    return radians
+  }
 }
 
 export default NumberUtil
