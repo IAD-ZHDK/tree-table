@@ -16,24 +16,19 @@ class GUILayer extends BaseLayer {
     this.controls.maxDistance = 10
     this._camera.position.z = 1
     /* import Points of Interest data */
-    /* create menu after loading data */
 
+    /* create menu after loading data */
     this.main(this)
     /* Add FPS stats */
     this.stats = new Stats()
     this.stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild(this.stats.domElement)
-
-    /* Text Boxes */
-    // possible inspiration: https://manu.ninja/webgl-three-js-annotations
-    console.log('something print this yes no yes no yes')
     // adding the full screen button
     if (document.fullscreenElement) {
       // curently fullscreen
     } else {
       this.addFullScreenButton()
     }
-
     // tactile info
     this._tactileInfo = document.getElementsByClassName('tactileInfo')[0]
   }
@@ -42,25 +37,32 @@ class GUILayer extends BaseLayer {
     this.stats.update()
     // display how many devices are tracked
 
-    // updating the canvas elements
-    this.globLayer.POIS.forEach((element, i) => {
-      let localPos = GeoUtil.CartesianToCanvas(element.position.x, element.position.y, element.position.z, this.globLayer._camera)
-      let infoCards = document.getElementsByClassName('infoCardWrap')
-      // eslint-disable-next-line eqeqeq
-      if (element.visibility) {
-        // infoCards[i].style.opacity = '0.5'
-        infoCards[i].classList.add('visibleCard')
-        infoCards[i].classList.remove('invisibleCard')
-      } else {
-        // infoCards[i].style.opacity = '0.05'
-        infoCards[i].classList.remove('visibleCard')
-        infoCards[i].classList.add('invisibleCard')
-        // infoCards[i].removeEventListener('click', function () { })
-        infoCards[i].classList.remove('openCard')
-      }
-      infoCards[i].style.left = localPos.x + 'px'
-      infoCards[i].style.top = localPos.y + 'px'
-    })
+    /* Info Cards */
+    let infoCards = document.getElementsByClassName('infoCardWrap')
+    if (!this.mapLayer.isVisible) {
+      this.globLayer.POIS.forEach((element, i) => {
+        let localPos = GeoUtil.CartesianToCanvas(element.position.x, element.position.y, element.position.z, this.globLayer._camera)
+        // eslint-disable-next-line eqeqeq
+        infoCards[i].classList.remove('disabledCard')
+        if (element.visibility) {
+          // infoCards[i].style.opacity = '0.5'
+          infoCards[i].classList.add('visibleCard')
+          infoCards[i].classList.remove('invisibleCard')
+        } else {
+          // infoCards[i].style.opacity = '0.05'
+          infoCards[i].classList.remove('visibleCard')
+          infoCards[i].classList.add('invisibleCard')
+          // infoCards[i].removeEventListener('click', function () { })
+          infoCards[i].classList.remove('openCard')
+        }
+        infoCards[i].style.left = localPos.x + 'px'
+        infoCards[i].style.top = localPos.y + 'px'
+      })
+    } else {
+      this.globLayer.POIS.forEach((element, i) => {
+        infoCards[i].classList.add('disabledCard')
+      })
+    }
     this._tactileInfo.textContent = `Devices: ${this.app.trackingClient.devices.length}`
   }
 

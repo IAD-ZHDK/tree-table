@@ -1,5 +1,5 @@
 import {
-  LineBasicMaterial, Color, Vector3, ConeGeometry, MeshBasicMaterial, Mesh, Line, BufferGeometry, Matrix4
+  LineBasicMaterial, Color, Vector3, ConeGeometry, MeshBasicMaterial, Mesh, Line, BufferGeometry
 } from 'three'
 import TWEEN from '@tweenjs/tween.js'
 class DataPoint {
@@ -24,6 +24,7 @@ class DataPoint {
     this.object = new Line(geometry, material)
     this.object.visible = false
   }
+
   coneGeometry (startLine, endLine) {
     let material = new MeshBasicMaterial({ color: this.color, opacity: 0.5, transparent: true })
     let geometry = new ConeGeometry(0.4, this.vector.length(), 4, 1)

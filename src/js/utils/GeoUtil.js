@@ -24,7 +24,6 @@ class GeoUtil {
     let widthHalf = width / 2
     let heightHalf = height / 2
     let pos = new Vector3(x, y, z)
-    let pos2D = pos.clone()
     pos.project(_camera)
     pos.x = (pos.x * widthHalf) + widthHalf
     pos.y = -(pos.y * heightHalf) + heightHalf

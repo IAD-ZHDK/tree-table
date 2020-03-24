@@ -31,7 +31,6 @@ class GlobeLayer extends BaseLayer {
     this.controls.dampingFactor = 0.01
     this.controls.zoomSpeed = 0.3
     this.matrix = new Matrix4() // matrix for camera movement
-
     // todo: ask florian if there is a better way to pass scope to event function
     // todo: check what events are appropriate on table
     let context = this
@@ -140,8 +139,6 @@ class GlobeLayer extends BaseLayer {
         let endLine = GeoUtil.horizontalToCartesian(horizontal[0], horizontal[1], this.EarthRadius + (pointValue / 10))
         let dataPoint = new DataPoint(startLine, endLine)
         this.DataObjects.push(dataPoint)
-        scene.add(dataPoint.getGeometry())
-        dataPoint.visible(false)
       }
     }
   }
@@ -151,10 +148,9 @@ class GlobeLayer extends BaseLayer {
       this.DataObjects[i].visible(bool)
     }
   }
-
   newPOI (lat, lon, name, content) {
     // point of interest
-    let newPOI = new POI(lat, lon,this.EarthRadius, name, this.scene, content)
+    let newPOI = new POI(lat, lon, this.EarthRadius, name, this.scene, content)
     this.POIS.push(newPOI)
   }
 

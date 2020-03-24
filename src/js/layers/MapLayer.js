@@ -1,9 +1,6 @@
 import BaseLayer from './BaseLayer'
 import {
-  SpriteMaterial,
-  TextureLoader,
-  Sprite,
-  OrthographicCamera, Scene, Mesh, SphereGeometry, BoxGeometry, MeshBasicMaterial, Shape, ShapeBufferGeometry, MeshPhongMaterial, Vector3
+  SpriteMaterial, TextureLoader, Sprite, Scene, Mesh, Shape, ShapeBufferGeometry, MeshPhongMaterial, Vector3
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import TWEEN from '@tweenjs/tween.js'
@@ -24,6 +21,7 @@ class MapLayer extends BaseLayer {
     this.sprite.scale.set(width, height, 8000)
     this._scene.add(this.sprite)
     this.sprite.visible = false
+    this.mapVisible = false
     /* Mask object  */
 
     let maskShape = new Shape()
@@ -59,6 +57,7 @@ class MapLayer extends BaseLayer {
   }
 
   showMap (bool) {
+    this.mapVisible = bool
     //
     if (bool) {
       if (this._app.globeLayer) {
@@ -88,6 +87,10 @@ class MapLayer extends BaseLayer {
         this.sprite.visible = false
       }.bind(this))
     }
+  }
+
+  get isVisible () {
+    return this.mapVisible
   }
 
   get app () {

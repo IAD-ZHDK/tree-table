@@ -68,6 +68,9 @@ FullScreenButton:hover {
 .invisibleCard{
   opacity: 0.05;
 }
+.disabledCard{
+  visibility: hidden;
+}
 .openCard{
   width:250px;
   height: 250px;
