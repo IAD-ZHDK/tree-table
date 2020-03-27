@@ -15,7 +15,7 @@ import {
   AmbientLight,
   Matrix4,
   VertexColors,
-  Raycaster,
+  Raycaster
 } from 'three'
 import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import TWEEN from '@tweenjs/tween.js'
@@ -166,7 +166,7 @@ class GlobeLayer extends BaseLayer {
     let targets = []
     targets[0] = 0.0
     targets[1] = 1.0
-    this.mesh.morphTargetInfluences = targets;
+    this.mesh.morphTargetInfluences = targets
     this.mesh.visible = false
   }
 
