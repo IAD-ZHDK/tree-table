@@ -14,8 +14,10 @@ import {
   SpotLight,
   AmbientLight,
   Matrix4,
-  Raycaster
+  VertexColors,
+  Raycaster,
 } from 'three'
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import TWEEN from '@tweenjs/tween.js'
 
 class GlobeLayer extends BaseLayer {
@@ -81,21 +83,18 @@ class GlobeLayer extends BaseLayer {
     /* Points of interest */
     this.POIS = []
 
-    /* dataPoint */
-    this.DataObjects = []
-
     // todo: need to correct for different map projections.
-    var crowtherData
-    var myScene = this.scene
-    var loader = new TextureLoader()
-    var parent = this
+    let crowtherData
+    let myScene = this.scene
+    let loader = new TextureLoader()
+    let parent = this
     loader.load(
       // resource URL
       'static/textures/earthDepth_3000_1500.png',
       // onLoad callback
       function (texture) {
         crowtherData = parent.getImageData(texture.image)
-        parent.drawDataEvenDistribution(myScene, crowtherData, texture.image.width, texture.image.height, 6)
+        parent.drawDataEvenDistribution(myScene, crowtherData, texture.image.width, texture.image.height, 7)
       })
     this.loadGioTiff()
   }
@@ -126,26 +125,68 @@ class GlobeLayer extends BaseLayer {
   }
 
   drawDataEvenDistribution (scene, imgdata, imgWidth, imgHeight, detail) {
+    // todo: need to clean up this function and make it suitable for multiple datasets
     // simple method to evenly distribute points: probably more efficient ways exist
     let Octahedron = new OctahedronGeometry(this.EarthRadius, detail)
+    let geometries = []
+    let BaseGeometries = []
     for (let i = 0; i < Octahedron.vertices.length; i++) {
       let v = Octahedron.vertices[i]
       let horizontal = GeoUtil.cartesianToHorizontal(v.x, v.y, v.z)
-
       let pointValue = this.getPixelValues(imgdata, Math.round(horizontal[2] * imgWidth), Math.round((1 - horizontal[3]) * imgHeight))
       if (pointValue >= 10) {
-        // let line = this.dataLine(horizontal[0], horizontal[1], (pointValue / 20))
         let startLine = GeoUtil.horizontalToCartesian(horizontal[0], horizontal[1], this.EarthRadius)
-        let endLine = GeoUtil.horizontalToCartesian(horizontal[0], horizontal[1], this.EarthRadius + (pointValue / 10))
+        let endLine = GeoUtil.horizontalToCartesian(horizontal[0], horizontal[1], this.EarthRadius + (pointValue / 20))
         let dataPoint = new DataPoint(startLine, endLine)
-        this.DataObjects.push(dataPoint)
+        geometries.push(dataPoint.geometry)
+        // an "blank" geometry for animating into the off state
+        startLine = GeoUtil.horizontalToCartesian(horizontal[0], horizontal[1], this.EarthRadius - 2)
+        endLine = GeoUtil.horizontalToCartesian(horizontal[0], horizontal[1], this.EarthRadius)
+        let dataPointBase = new DataPoint(startLine, endLine)
+        BaseGeometries.push(dataPointBase.geometry)
       }
     }
+
+    let dataGeometry = BufferGeometryUtils.mergeBufferGeometries(
+      geometries, false)
+
+    let baseGeometry = BufferGeometryUtils.mergeBufferGeometries(
+      BaseGeometries, false)
+
+    dataGeometry.morphAttributes.position = []
+    let attributes = dataGeometry.getAttribute('position')
+    attributes.name = 'empty'
+    dataGeometry.morphAttributes.position[0] = attributes
+    let attributes2 = baseGeometry.getAttribute('position')
+    attributes2.name = 'data1'
+    dataGeometry.morphAttributes.position[1] = attributes2
+    const material = new MeshBasicMaterial({ vertexColors: VertexColors, morphTargets: true })
+    this.mesh = new Mesh(dataGeometry, material)
+    this.scene.add(this.mesh)
+    let targets = []
+    targets[0] = 0.0
+    targets[1] = 1.0
+    this.mesh.morphTargetInfluences = targets;
+    this.mesh.visible = false
   }
 
   showData (bool) {
-    for (let i = 0; i < this.DataObjects.length; i++) {
-      this.DataObjects[i].visible(bool)
+    console.log(this.mesh)
+    let targets = []
+    if (bool) {
+      this.mesh.visible = true
+      targets[0] = 1.0
+      targets[1] = 0.0
+      let tween = new TWEEN.Tween(this.mesh.morphTargetInfluences).to(targets, 1000).start()
+      tween.easing(TWEEN.Easing.Circular.InOut)
+    } else {
+      targets[0] = 0.0
+      targets[1] = 1.0
+      let tween = new TWEEN.Tween(this.mesh.morphTargetInfluences).to(targets, 1000).start()
+      tween.easing(TWEEN.Easing.Circular.InOut)
+      tween.onStop(function () {
+        this.mesh.visible = false
+      }.bind(this))
     }
   }
   newPOI (lat, lon, name, content) {
@@ -189,8 +230,6 @@ class GlobeLayer extends BaseLayer {
     let x = (event.clientX / window.innerWidth) * 2 - 1
     let y = -(event.clientY / window.innerHeight) * 2 + 1
     let mouse = new Vector3(x, y, 1)
-    // find intersections
-
     // create a Ray with origin at the mouse position
     // and direction into the scene (camera direction)
     let vector = new Vector3(mouse.x, mouse.y, 1)

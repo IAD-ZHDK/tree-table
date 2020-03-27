@@ -2,7 +2,7 @@ import BaseLayer from './BaseLayer'
 import {
   SpriteMaterial, TextureLoader, Sprite, Scene, Mesh, Shape, ShapeBufferGeometry, MeshPhongMaterial, Vector3
 } from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+
 import TWEEN from '@tweenjs/tween.js'
 
 class MapLayer extends BaseLayer {
