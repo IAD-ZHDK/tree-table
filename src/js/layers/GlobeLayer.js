@@ -44,7 +44,7 @@ class GlobeLayer extends BaseLayer {
     }.bind(this), false)
 
     /* earth */
-    const EarthTexture = new TextureLoader().load('static/textures/earthMono_16384_8192_blue.jpg' +
+    const EarthTexture = new TextureLoader().load('static/textures/earthMono_16384_8192_blue_compressed.jpg' +
       '')
     let EarthGeometry = new SphereGeometry(this.EarthRadius, 100, 100)
     let EarthMaterial = new MeshPhongMaterial({ map: EarthTexture })
