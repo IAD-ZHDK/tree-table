@@ -11,9 +11,9 @@ class BaseLayer {
     let width = window.innerWidth
     let height = window.innerHeight
     if (this.Orthographic) {
-      this._camera = new OrthographicCamera(-width / 2, width / 2, height / 2, -height / 2, 0, 1000)
+      this._camera = new OrthographicCamera(-width / 2, width / 2, height / 2, -height / 2, 0, 10000)
     } else {
-      this._camera = new PerspectiveCamera(70, width / height, 1, 5000)
+      this._camera = new PerspectiveCamera(70, width / height, 1, 10000)
       this._controls = new OrbitControls(this._camera, app.renderer.domElement)
     }
   }

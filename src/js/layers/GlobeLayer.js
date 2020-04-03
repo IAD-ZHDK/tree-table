@@ -27,8 +27,8 @@ class GlobeLayer extends BaseLayer {
     /* controls */
     // disable zoom for globe
     this.controls.enablePan = false
-    this.controls.minDistance = this.EarthRadius + 30
-    this.controls.maxDistance = this.EarthRadius * 3.5
+    this.controls.minDistance = this.EarthRadius + 1
+    this.controls.maxDistance = this.EarthRadius * 30.5
     this.controls.enableDamping = true
     this.controls.dampingFactor = 0.01
     this.controls.zoomSpeed = 0.3
@@ -44,7 +44,7 @@ class GlobeLayer extends BaseLayer {
     }.bind(this), false)
 
     /* earth */
-    const EarthTexture = new TextureLoader().load('static/textures/earthMono_16384_8192.jpg' +
+    const EarthTexture = new TextureLoader().load('static/textures/earthMono_16384_8192_blue.jpg' +
       '')
     let EarthGeometry = new SphereGeometry(this.EarthRadius, 100, 100)
     let EarthMaterial = new MeshPhongMaterial({ map: EarthTexture })
@@ -54,15 +54,15 @@ class GlobeLayer extends BaseLayer {
     // specular reflection
     EarthMaterial.specularMap = new TextureLoader().load('static/textures/earthSpec_512_256.jpg' +
       '')
-    EarthMaterial.shininess = 100
+    EarthMaterial.shininess = 50
     // EarthMaterial.bumpScale = 20
     this.Earth = new Mesh(EarthGeometry, EarthMaterial)
     this.Earth.position.x = 0
     this.scene.add(this.Earth)
 
     /* stars */
-    const StarTexture = new TextureLoader().load('static/textures/sky.jpg')
-    let StarGeometry = new SphereGeometry(1200, 10, 10)
+    const StarTexture = new TextureLoader().load('static/textures/sky_r.jpg')
+    let StarGeometry = new SphereGeometry(4200, 10, 10)
     let StarMaterial = new MeshBasicMaterial({ side: BackSide, map: StarTexture })
     this.Star = new Mesh(StarGeometry, StarMaterial)
     this.Star.position.x = 0
@@ -70,14 +70,21 @@ class GlobeLayer extends BaseLayer {
     this.Star.castShadow = false
 
     /* lights */
-    this.light = new AmbientLight(0xffffff, 0.6)
+    this.light = new AmbientLight(0xffffff, 0.9)
     this.scene.add(this.light)
-    this.spotLight = new SpotLight(0xffffff, 0.5, 2000, 10, 2)
+    this.spotLight = new SpotLight(0xff99dd, 0.75, 2000, 10, 2)
     this.spotLight.castShadow = true
     this.spotLight.position.set(200, 0, 100)
     this.spotLight.angle = 1.05
     this.Earth.receiveShadow = true
     this.Earth.castShadow = true
+    this.spotLight2 = new SpotLight(0xff99dd, 0.75, 2000, -10, 1)
+    this.spotLight2.castShadow = true
+    this.spotLight2.position.set(-200, 0, -100)
+    this.spotLight2.angle = -1.05
+    // this.Earth.receiveShadow = true
+    // this.Earth.castShadow = true
+    this.scene.add(this.spotLight2)
     this.scene.add(this.spotLight)
 
     /* Points of interest */
