@@ -26,16 +26,13 @@ class GlobeLayer extends BaseLayer {
     this.EarthRadius = 100
     /* controls */
     // disable zoom for globe
+    // todo: there are is a bug on safari, after enabling or disabling visualisation, controls become extreemely lagy
     this.controls.enablePan = false
     this.controls.minDistance = this.EarthRadius + 1
     this.controls.maxDistance = this.EarthRadius * 30.5
     this.controls.enableDamping = true
     this.controls.dampingFactor = 0.01
     this.controls.zoomSpeed = 0.3
-    this.matrix = new Matrix4() // matrix for camera movement
-    // todo: ask florian if there is a better way to pass scope to event function
-    // todo: check what events are appropriate on table
-    let context = this
     window.addEventListener('mousedown', function (event) {
       this.onDocumentPress(event)
     }.bind(this), false)
