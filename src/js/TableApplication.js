@@ -3,6 +3,7 @@ import GUILayer from './layers/GUILayer'
 import GlobeLayer from './layers/GlobeLayer'
 import MapLayer from './layers/MapLayer'
 import TrackingClient from './io/TrackingClient'
+import { DefaultLoadingManager } from 'three'
 
 class TableApplication extends AbstractApplication {
   constructor () {
@@ -21,20 +22,28 @@ class TableApplication extends AbstractApplication {
     this.globeLayer.setup()
     this.GUILayer = new GUILayer(this)
     this.GUILayer.setup()
-    // this.boxExampleLayer = new BoxExampleLayer(this)
-    // this.boxExampleLayer.setup()
+    const loadingScreen = document.getElementById('loading-screen')
 
-    // add scenes
-    this.addLayer(this.globeLayer)
-    this.addLayer(this.GUILayer)
-    this.addLayer(this.mapLayer)
-
-    // start animation renderer
-    this.animate()
+    // inspired by https://jsfiddle.net/8w3deqyg/
+    DefaultLoadingManager.onLoad = function () {
+      console.log('Loading complete!')
+      loadingScreen.classList.add('fade-out')
+      // optional: remove loader from DOM via event listener
+      loadingScreen.addEventListener('transitionend', onTransitionEnd)
+      // add scenes
+      this.addLayer(this.globeLayer)
+      this.addLayer(this.GUILayer)
+      this.addLayer(this.mapLayer)
+      // start animation renderer
+      this.animate()
+    }.bind(this)
   }
 
   get trackingClient () {
     return this._trackingClient
   }
+}
+function onTransitionEnd (event) {
+  event.target.remove()
 }
 export default TableApplication
