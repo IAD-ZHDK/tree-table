@@ -43,8 +43,7 @@ class GlobeLayer extends BaseLayer {
     window.addEventListener('ontouchstart', function (event) {
       this.onDocumentPress(event)
     }.bind(this), false)
-
-    let EarthMaterial = new MeshPhongMaterial({ map: EarthTexture })
+    
     /* Visual Style */
     this.setStyle(0)
 
