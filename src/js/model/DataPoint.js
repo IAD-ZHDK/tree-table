@@ -26,8 +26,8 @@ class DataPoint {
     // compute a color
     let amount = this.vector.length() / 100
     const color = new Color()
-    const hue = Math.lerp(0.1, 0.3, amount)
-    const saturation = 1
+    const hue = 0.5333
+    const saturation = 0.45
     const lightness = Math.lerp(0.4, 1.0, amount)
     color.setHSL(hue, saturation, lightness)
     // get the colors as an array of values from 0 to 255

@@ -36,7 +36,6 @@ class GUILayer extends BaseLayer {
   update () {
     this.stats.update()
     // display how many devices are tracked
-
     /* Info Cards */
     let infoCards = document.getElementsByClassName('infoCardWrap')
     if (!this.mapLayer.isVisible) {
@@ -81,6 +80,7 @@ class GUILayer extends BaseLayer {
   makeTestMenu (context) {
     /* simple gui */
     return new Promise(function (resolve) {
+      /* locations */
       const dat = require('dat.gui')
       context.gui = new dat.GUI()
       let loc = context.gui.addFolder('locations')
@@ -94,14 +94,32 @@ class GUILayer extends BaseLayer {
         }
         loc.add(parameters, 'f').name(context.results[i].name)
       }
-      //
+      /* data visuals */
       let settings = {
         checkbox: false
       }
-      let datavis = context.gui.addFolder('data visual')
+      let datavis = context.gui.addFolder('Data Visual')
       datavis.add(settings, 'checkbox').onChange(function (value) {
         context.globLayer.showData(value)
       })
+      /* graphic style */
+      let style = context.gui.addFolder('Visual Style')
+      let parameters =
+        {
+          f: function () {
+            context.globLayer.changeStyle(0)
+          }
+        }
+      style.add(parameters, 'f').name('Visual 2D')
+      parameters =
+        {
+          g: function () {
+            context.globLayer.changeStyle(1)
+          }
+        }
+      style.add(parameters, 'g').name('Blue marble')
+
+      /* 2D map */
       let map2D = context.gui.addFolder('Map 2D')
       map2D.add(settings, 'checkbox').onChange(function (value) {
         // context.globLayer.animateToPoint(0, 0)

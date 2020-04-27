@@ -30,13 +30,13 @@ class TableApplication extends AbstractApplication {
       loadingScreen.classList.add('fade-out')
       // optional: remove loader from DOM via event listener
       loadingScreen.addEventListener('transitionend', onTransitionEnd)
-      // add scenes
-      this.addLayer(this.globeLayer)
-      this.addLayer(this.GUILayer)
-      this.addLayer(this.mapLayer)
-      // start animation renderer
-      this.animate()
-    }.bind(this)
+    }
+    // add scenes
+    this.addLayer(this.globeLayer)
+    this.addLayer(this.GUILayer)
+    this.addLayer(this.mapLayer)
+    // start animation renderer
+    this.animate()
   }
 
   get trackingClient () {

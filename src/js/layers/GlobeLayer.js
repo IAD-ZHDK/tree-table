@@ -13,7 +13,7 @@ import {
   OctahedronGeometry,
   SpotLight,
   AmbientLight,
-  Matrix4,
+  Color,
   VertexColors,
   Raycaster
 } from 'three'
@@ -24,6 +24,7 @@ class GlobeLayer extends BaseLayer {
   setup () {
     super.setup()
     this.EarthRadius = 100
+    this.sceneObjects = []
     /* controls */
     // disable zoom for globe
     // todo: there are is a bug on safari, after enabling or disabling visualisation, controls become extreemely lagy
@@ -33,6 +34,9 @@ class GlobeLayer extends BaseLayer {
     this.controls.enableDamping = true
     this.controls.dampingFactor = 0.01
     this.controls.zoomSpeed = 0.3
+    this.controls.minPolarAngle = 0.3
+    this.controls.maxPolarAngle = Math.PI - 0.3
+
     window.addEventListener('mousedown', function (event) {
       this.onDocumentPress(event)
     }.bind(this), false)
@@ -40,49 +44,9 @@ class GlobeLayer extends BaseLayer {
       this.onDocumentPress(event)
     }.bind(this), false)
 
-    /* earth */
-    const EarthTexture = new TextureLoader().load('static/textures/earthMono_16384_8192_blue_compressed.jpg' +
-      '')
-    let EarthGeometry = new SphereGeometry(this.EarthRadius, 100, 100)
     let EarthMaterial = new MeshPhongMaterial({ map: EarthTexture })
-    // bump map
-    // EarthMaterial.bumpMap = new TextureLoader().load('static/textures/gebco_08_rev_elev.png' +
-    //  '')
-    // specular reflection
-    EarthMaterial.specularMap = new TextureLoader().load('static/textures/earthSpec_512_256.jpg' +
-      '')
-    EarthMaterial.shininess = 50
-    // EarthMaterial.bumpScale = 20
-    this.Earth = new Mesh(EarthGeometry, EarthMaterial)
-    this.Earth.position.x = 0
-    this.scene.add(this.Earth)
-
-    /* stars */
-    const StarTexture = new TextureLoader().load('static/textures/sky_r.jpg')
-    let StarGeometry = new SphereGeometry(4200, 10, 10)
-    let StarMaterial = new MeshBasicMaterial({ side: BackSide, map: StarTexture })
-    this.Star = new Mesh(StarGeometry, StarMaterial)
-    this.Star.position.x = 0
-    this.scene.add(this.Star)
-    this.Star.castShadow = false
-
-    /* lights */
-    this.light = new AmbientLight(0xffffff, 0.9)
-    this.scene.add(this.light)
-    this.spotLight = new SpotLight(0xff99dd, 0.75, 2000, 10, 2)
-    this.spotLight.castShadow = true
-    this.spotLight.position.set(200, 0, 100)
-    this.spotLight.angle = 1.05
-    this.Earth.receiveShadow = true
-    this.Earth.castShadow = true
-    this.spotLight2 = new SpotLight(0xff99dd, 0.75, 2000, -10, 1)
-    this.spotLight2.castShadow = true
-    this.spotLight2.position.set(-200, 0, -100)
-    this.spotLight2.angle = -1.05
-    // this.Earth.receiveShadow = true
-    // this.Earth.castShadow = true
-    this.scene.add(this.spotLight2)
-    this.scene.add(this.spotLight)
+    /* Visual Style */
+    this.setStyle(0)
 
     /* Points of interest */
     this.POIS = []
@@ -199,8 +163,8 @@ class GlobeLayer extends BaseLayer {
     this.POIS.push(newPOI)
   }
 
-  // check this the transformation from the attractors send the text boxes far away
   animateToPoint (options) {
+    // need to modify animation to only modify rotation
     let lat = options.lat || 0
     let lon = options.lon || 0
     let point = GeoUtil.horizontalToCartesian(lat, lon, this.EarthRadius)
@@ -229,6 +193,121 @@ class GlobeLayer extends BaseLayer {
     return total
   }
 
+  setStyle (id) {
+    if (id === 0) {
+      this.graphicStyle()
+    } else {
+      this.blueMarbleStyle()
+    }
+  }
+
+  changeStyle (id) {
+    for (let i = this.sceneObjects.length - 1; i >= 0; i--) {
+      this.scene.remove(this.sceneObjects[i])
+      this.clearThree(this.sceneObjects[i])
+      this.sceneObjects.pop()
+    }
+    this.app.renderer.renderLists.dispose()
+    this.setStyle(id)
+  }
+
+  blueMarbleStyle () {
+    this.scene.background = new Color(0x000000)
+    /* earth */
+    let EarthTexture = new TextureLoader().load('static/textures/earthMono_16384_8192_blue_compressed.jpg' +
+      '')
+    let EarthGeometry = new SphereGeometry(this.EarthRadius, 100, 100)
+    let EarthMaterial = new MeshPhongMaterial({ map: EarthTexture })
+    // bump map
+    // EarthMaterial.bumpMap = new TextureLoader().load('static/textures/gebco_08_rev_elev.png' +
+    //  '')
+    // specular reflection
+    EarthMaterial.specularMap = new TextureLoader().load('static/textures/earthSpec_512_256.jpg' +
+      '')
+    EarthMaterial.shininess = 50
+    // EarthMaterial.bumpScale = 20
+    let Earth = new Mesh(EarthGeometry, EarthMaterial)
+    Earth.position.x = 0
+    Earth.receiveShadow = true
+    Earth.castShadow = true
+    this.sceneObjects.push(Earth)
+    this.scene.add(Earth)
+
+    /* stars */
+    let StarTexture = new TextureLoader().load('static/textures/sky_r.jpg')
+    let StarGeometry = new SphereGeometry(4200, 10, 10)
+    let StarMaterial = new MeshBasicMaterial({ side: BackSide, map: StarTexture })
+    let Stars = new Mesh(StarGeometry, StarMaterial)
+    Stars.position.x = 0
+    Stars.castShadow = false
+    this.sceneObjects.push(Stars)
+    this.scene.add(Stars)
+
+    /* lights */
+    let light = new AmbientLight(0xffffff, 0.9)
+    let spotLight = new SpotLight(0xff99dd, 0.75, 2000, 10, 2)
+    spotLight.castShadow = true
+    spotLight.position.set(200, 0, 100)
+    spotLight.angle = 1.05
+    let spotLight2 = new SpotLight(0xff99dd, 0.75, 2000, -10, 1)
+    spotLight2.castShadow = true
+    spotLight2.position.set(-200, 0, -100)
+    spotLight2.angle = -1.05
+    this.scene.add(light)
+    this.scene.add(spotLight2)
+    this.scene.add(spotLight)
+    this.sceneObjects.push(light)
+    this.sceneObjects.push(spotLight)
+    this.sceneObjects.push(spotLight2)
+  }
+
+  graphicStyle () {
+    /* background */
+    this.scene.background = new Color(0xf37169)
+    /* earth */
+    let EarthTexture = new TextureLoader().load('static/textures/World_Location_map_Wikicommons.jpg' +
+      '')
+    EarthTexture.anisotropy = 26
+    let EarthGeometry = new SphereGeometry(this.EarthRadius, 100, 100)
+    let EarthMaterial = new MeshBasicMaterial({
+      map: EarthTexture,
+      depthWrite: true
+    })
+    let Earth = new Mesh(EarthGeometry, EarthMaterial)
+    Earth.position.x = 0
+    this.sceneObjects.push(Earth)
+    this.scene.add(Earth)
+    let outlineMaterial = new MeshBasicMaterial({ color: 0xffffff, side: BackSide })
+    let outlineMesh = new Mesh(EarthGeometry, outlineMaterial)
+    outlineMesh.scale.multiplyScalar(1.01)
+    this.scene.add(outlineMesh)
+    this.sceneObjects.push(outlineMesh)
+  }
+
+  clearThree (obj) {
+    while (obj.children.length > 0) {
+      this.clearThree(obj.children[0])
+    }
+    if (obj.geometry) {
+      obj.geometry.dispose()
+
+      console.log('dispose geometry')
+    }
+    if (obj.material) {
+      // in case of map, bumpMap, normalMap, envMap ...
+      Object.keys(obj.material).forEach(prop => {
+        if (!obj.material[prop]) {
+          return
+        }
+        if (typeof obj.material[prop].dispose === 'function') {
+          obj.material[prop].dispose()
+          console.log('dispose material')
+        }
+      })
+      obj.material.dispose()
+    }
+  }
+
   onDocumentPress (event) {
     // update the mouse variable
     let x = (event.clientX / window.innerWidth) * 2 - 1
@@ -237,14 +316,12 @@ class GlobeLayer extends BaseLayer {
     // create a Ray with origin at the mouse position
     // and direction into the scene (camera direction)
     let vector = new Vector3(mouse.x, mouse.y, 1)
-
     let ray = new Raycaster()
     ray.setFromCamera(mouse, this._camera)
     // create an array containing all objects in the scene with which the ray intersects
     // calculate objects intersecting the picking ray
     let intersects = ray.intersectObjects(this.scene.children)
     for (let i = 0; i < intersects.length; i++) {
-      // intersects[ i ].object.material.color.set(0xff00ff)
       for (let j = 0; j < this.POIS.length; j++) {
         if (intersects[ i ].object.name === this.POIS[ j ].name) {
           let options = { lat: this.POIS[ j ].lat, lon: this.POIS[ j ].lon }
