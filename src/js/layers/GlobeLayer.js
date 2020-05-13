@@ -1,6 +1,5 @@
 import BaseLayer from './BaseLayer'
 import POI from '../model/POI.js'
-import DataPoint from '../model/DataPoint.js'
 import GeoUtil from '../utils/GeoUtil.js'
 import DataVis from '../utils/dataVis.js'
 import {
@@ -11,11 +10,9 @@ import {
   TextureLoader,
   BackSide,
   Vector3,
-  OctahedronGeometry,
   SpotLight,
   AmbientLight,
   Color,
-  VertexColors,
   Raycaster
 } from 'three'
 
@@ -51,48 +48,19 @@ class GlobeLayer extends BaseLayer {
     /* Points of interest */
     this.POIS = []
 
-    // todo: need to correct for different map projections.
-    let crowtherData
-    let myScene = this.scene
-    let loader = new TextureLoader()
-    let parent = this
-    this.DataVis = new DataVis(myScene)
-    loader.load(
-      // resource URL
-      'static/textures/earthDepth_3000_1500.png',
-      // onLoad callback
-      function (texture) {
-        crowtherData = parent.getImageData(texture.image)
-        parent.DataVis.newVis(parent.EarthRadius, crowtherData, texture.image.width, texture.image.height, 7)
-      })
-    this.loadGioTiff()
+    /* Data visualisation */
+    this.DataVisBastin = new DataVis(this.scene, this.EarthRadius, 'static/crowther_data/Bastin_19_Restoration_Potential.tif', 'spikes')
+    this.DataVisOdiac = new DataVis(this.scene, this.EarthRadius, 'static/crowther_data/odiac2019_jan.tif', 'bubble')
   }
 
   update () {
     TWEEN.update()
-    // todo: check if there are performance benifits to using once instance of TWEEN across whole application
-    this.DataVis.update()
     // make sure only POIs in front of the earth are rendered
     for (let j = 0; j < this.POIS.length; j++) {
       this.POIS[ j ].update()
       this.POIS[ j ].isVisible(this._camera, this.EarthRadius)
     }
     this.controls.update()
-  }
-
-  async loadGioTiff () {
-    const GeoTIFF = require('geotiff')
-    let response = await fetch('static/crowther_data/Bastin_19_Restoration_Potential.tif')
-    let arrayBuffer = await response.arrayBuffer()
-    let tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer)
-    let image = await tiff.getImage()
-    let samplesPerPixel = image.getBytesPerPixel()
-    let rasters = await image.readRasters()
-    // const { width, height } = data
-    console.log('geotiff loaded')
-    console.log(image.getFileDirectory(), image.getGeoKeys())
-    console.log(rasters)
-    // example reading raster: http://bl.ocks.org/rveciana/263b324083ece278e966686d7dba700f
   }
 
   newPOI (lat, lon, name, content) {
@@ -102,7 +70,7 @@ class GlobeLayer extends BaseLayer {
   }
 
   animateToPoint (options) {
-    // need to modify animation to only modify rotation
+    // todo: modify animation to only effect rotation and zoom
     let lat = options.lat || 0
     let lon = options.lon || 0
     let point = GeoUtil.horizontalToCartesian(lat, lon, this.EarthRadius)
@@ -112,15 +80,6 @@ class GlobeLayer extends BaseLayer {
     let newPosition = target.normalize().multiplyScalar(camDistance)
     let tween = new TWEEN.Tween(this._camera.position).to(newPosition, 1000).start()
     return tween.easing(TWEEN.Easing.Circular.InOut)
-  }
-
-  getImageData (image) {
-    let canvas = document.createElement('canvas')
-    canvas.width = image.width
-    canvas.height = image.height
-    let context = canvas.getContext('2d')
-    context.drawImage(image, 0, 0)
-    return context.getImageData(0, 0, image.width, image.height)
   }
 
   setStyle (id) {
@@ -191,8 +150,17 @@ class GlobeLayer extends BaseLayer {
     this.sceneObjects.push(spotLight2)
   }
 
-  showData (bool) {
-    this.DataVis.showData(bool)
+  showData (id) {
+    if (id === 1) {
+      this.DataVisBastin.showData(false)
+      this.DataVisOdiac.showData(true)
+    } else if (id === 2) {
+      this.DataVisBastin.showData(true)
+      this.DataVisOdiac.showData(false)
+    } else {
+      this.DataVisBastin.showData(false)
+      this.DataVisOdiac.showData(false)
+    }
   }
 
   graphicStyle () {

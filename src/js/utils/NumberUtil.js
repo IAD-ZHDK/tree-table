@@ -19,6 +19,13 @@ class NumberUtil {
     let radians = degrees * (Math.PI / 180)
     return radians
   }
+
+  static map (inMin, inMax, outMin, outMax) {
+    return (this - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
+  }
+  static modFloor (size, index) {
+    return ((size % index) + index) % index
+  }
 }
 
 export default NumberUtil

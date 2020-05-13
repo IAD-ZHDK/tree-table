@@ -98,26 +98,35 @@ class GUILayer extends BaseLayer {
       let settings = {
         checkbox: false
       }
+      let parameterData =
+        {
+          a: function () {
+            context.globLayer.showData(0)
+          },
+          b: function () {
+            context.globLayer.showData(1)
+          },
+          c: function () {
+            context.globLayer.showData(2)
+          }
+        }
       let datavis = context.gui.addFolder('Data Visual')
-      datavis.add(settings, 'checkbox').onChange(function (value) {
-        context.globLayer.showData(value)
-      })
+      datavis.add(parameterData, 'a').name('None')
+      datavis.add(parameterData, 'b').name('co2  Anthropogenic - cg/m2/day (jan 2019) Odiac')
+      datavis.add(parameterData, 'c').name('Bastin Reforestation')
       /* graphic style */
       let style = context.gui.addFolder('Visual Style')
-      let parameters =
+      let parameterStyle =
         {
           f: function () {
             context.globLayer.changeStyle(0)
-          }
-        }
-      style.add(parameters, 'f').name('Visual 2D')
-      parameters =
-        {
+          },
           g: function () {
             context.globLayer.changeStyle(1)
           }
         }
-      style.add(parameters, 'g').name('Blue marble')
+      style.add(parameterStyle, 'f').name('Visual 2D')
+      style.add(parameterStyle, 'g').name('Blue marble')
 
       /* 2D map */
       let map2D = context.gui.addFolder('Map 2D')
