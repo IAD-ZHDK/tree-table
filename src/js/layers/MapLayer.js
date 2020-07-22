@@ -12,11 +12,18 @@ class MapLayer extends BaseLayer {
     this._app.renderer.autoClear = false
     this._scene2 = new Scene()
     this._camera.position.z = 100
-    let spriteMap = new TextureLoader().load('static/textures/earthMono_8192 _4096.jpg')
-    let spriteMaterial = new SpriteMaterial({ map: spriteMap, color: 0xffffff })
-    this.sprite = new Sprite(spriteMaterial)
     let width = window.innerWidth
     let height = window.innerHeight
+    let texture = new TextureLoader().load('static/textures/World_Location_map_Wikicommons.jpg', function (tex) {
+      console.log('loaded' + this)
+      this.aspectRatio = texture.image.width / texture.image.height
+      this.scaleMap(height * this.aspectRatio, height)
+    }.bind(this))
+    let spriteMaterial = new SpriteMaterial({ map: texture, color: 0xffffff })
+    // console.log(this.sprite.width)
+    this.sprite = new Sprite(spriteMaterial)
+
+    // this.sprite.height * (window.innerWidth / this.texture.image.width)
     this.sprite.center.set(0.5, 0.5)
     this.sprite.scale.set(width, height, 8000)
     this._scene.add(this.sprite)
@@ -45,6 +52,10 @@ class MapLayer extends BaseLayer {
     this.maskScale = new Vector3(1, 1, 1)
     this.MapTween = new TWEEN.Tween()
     this.showMap(false)
+  }
+
+  scaleMap (width, height) {
+    this.sprite.scale.set(width, height, 8000)
   }
 
   update () {
