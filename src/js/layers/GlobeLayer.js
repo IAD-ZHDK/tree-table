@@ -27,8 +27,8 @@ class GlobeLayer extends BaseLayer {
     // disable zoom for globe
     // todo: there are is a bug on safari, after enabling or disabling visualisation, controls become extreemely lagy
     this.controls.enablePan = false
-    this.controls.minDistance = this.EarthRadius + 1
-    this.controls.maxDistance = this.EarthRadius * 30.5
+    this.controls.minDistance = this.EarthRadius + 10
+    this.controls.maxDistance = this.EarthRadius * 15.5
     this.controls.enableDamping = true
     this.controls.dampingFactor = 0.01
     this.controls.zoomSpeed = 0.3
@@ -103,7 +103,7 @@ class GlobeLayer extends BaseLayer {
   blueMarbleStyle () {
     this.scene.background = new Color(0x000000)
     /* earth */
-    let EarthTexture = new TextureLoader().load('static/textures/earthMono_16384_8192_blue_compressed.jpg' +
+    let EarthTexture = new TextureLoader().load('static/textures/earthMono_16384_8192.jpg' +
       '')
     let EarthGeometry = new SphereGeometry(this.EarthRadius, 100, 100)
     let EarthMaterial = new MeshPhongMaterial({ map: EarthTexture })
@@ -123,7 +123,7 @@ class GlobeLayer extends BaseLayer {
     this.scene.add(Earth)
 
     /* stars */
-    let StarTexture = new TextureLoader().load('static/textures/sky_r.jpg')
+    let StarTexture = new TextureLoader().load('static/textures/sky.jpg')
     let StarGeometry = new SphereGeometry(4200, 10, 10)
     let StarMaterial = new MeshBasicMaterial({ side: BackSide, map: StarTexture })
     let Stars = new Mesh(StarGeometry, StarMaterial)
@@ -134,11 +134,11 @@ class GlobeLayer extends BaseLayer {
 
     /* lights */
     let light = new AmbientLight(0xffffff, 0.9)
-    let spotLight = new SpotLight(0xff99dd, 0.75, 2000, 10, 2)
+    let spotLight = new SpotLight(0xffffff, 0.75, 2000, 10, 2)
     spotLight.castShadow = true
     spotLight.position.set(200, 0, 100)
     spotLight.angle = 1.05
-    let spotLight2 = new SpotLight(0xff99dd, 0.75, 2000, -10, 1)
+    let spotLight2 = new SpotLight(0xffffff, 0.75, 2000, -10, 1)
     spotLight2.castShadow = true
     spotLight2.position.set(-200, 0, -100)
     spotLight2.angle = -1.05
